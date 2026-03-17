@@ -24,6 +24,8 @@ The app loads a 56-card runtime deck (52 standard cards + 4 jokers) shuffled on 
 
 All content — card tasks, point values, prize definitions, and AI settings — is editable through the app's admin pages. No config file editing required after initial setup.
 
+![card-maze](https://github.com/user-attachments/assets/9c0a87b1-1ac8-4040-bcd2-1bab3c1942c8)
+
 ---
 
 ## Features
@@ -45,6 +47,8 @@ All content — card tasks, point values, prize definitions, and AI settings —
 - **Export Deck** (`/export-deck`) — download a `deck.xml` snapshot of all card tasks, prizes, joker tasks, and today's seed
 - **Import Deck** (`/import-deck`) — upload a previously exported `deck.xml` to restore tasks, prizes, and seed; deck is reshuffled immediately on import
 
+![card-maze-prizes](https://github.com/user-attachments/assets/1d9fd9f3-7ed8-48d5-bdf3-94eb0e052051)
+
 ### AI Joker Tasks
 - Generate fresh joker tasks on every deck start using **OpenAI** or a local **Ollama** instance
 - Configure the AI provider live via `/ai` — no restart needed
@@ -58,6 +62,8 @@ All content — card tasks, point values, prize definitions, and AI settings —
 - Share button (↗ share) appears in the bottom bar as soon as at least one card has been completed
 - Login-protected — all routes require an authenticated session
 - Bootstrap and Inter font served locally (no CDN dependency at runtime)
+
+![card-maze-others](https://github.com/user-attachments/assets/4852bbdc-8a98-4489-9973-5af385165dc2)
 
 ---
 
