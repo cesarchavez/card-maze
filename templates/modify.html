@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modify Deck — {{ app_title }}</title>
+
+  <!-- Apply saved theme before CSS renders -->
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       THEME TOKENS  (same dual-theme system as index.html)
+    ══════════════════════════════════════════════════════════════ */
+    :root, [data-theme="dark"] {
+      --bg-base:        #05080f;
+      --bg-surface:     #0c1220;
+      --border-subtle:  rgba(255,255,255,.07);
+      --border-accent:  rgba(59,130,246,.35);
+      --accent:         #3b82f6;
+      --accent-bright:  #60a5fa;
+      --accent-dim:     #1d4ed8;
+      --accent-glow:    rgba(59,130,246,.18);
+      --text-primary:   #f1f5f9;
+      --text-muted:     #64748b;
+      --text-soft:      #94a3b8;
+      --body-grad1:     rgba(29,78,216,.2);
+
+      --nav-bg:          rgba(5,8,15,.88);
+      --nav-shadow:      rgba(59,130,246,.08);
+      --nav-brand:       #f1f5f9;
+      --nav-brand-hvr:   #60a5fa;
+      --nav-link:        #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+
+      --dd-bg:      #0d1627;
+      --dd-hdr:     #64748b;
+      --dd-item:    #94a3b8;
+      --dd-hvr-bg:  rgba(59,130,246,.12);
+      --dd-hvr-cl:  #60a5fa;
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+      --dd-shadow:  rgba(0,0,0,.6);
+
+      --ctr-bg:  rgba(59,130,246,.18);
+      --ctr-bdr: rgba(59,130,246,.35);
+      --ctr-cl:  #60a5fa;
+
+      --divider: rgba(59,130,246,.35);
+
+      --btn-save-from: #1d4ed8;
+      --btn-save-to:   #3b82f6;
+      --btn-save-sh:   rgba(59,130,246,.35);
+      --btn-code-cl:   #60a5fa;
+
+      /* Panel */
+      --pnl-bg:   rgba(13,22,39,.65);
+      --pnl-bdr:  rgba(59,130,246,.35);
+
+      /* Red suit */
+      --red-suit:     #ef4444;
+      --red-suit-bg:  rgba(239,68,68,.12);
+      --red-suit-bdr: rgba(239,68,68,.3);
+
+      /* Card row */
+      --row-bg:       rgba(255,255,255,.025);
+      --row-hvr-bdr:  rgba(59,130,246,.2);
+      --row-focus-bdr:rgba(59,130,246,.45);
+      --row-focus-bg: rgba(59,130,246,.04);
+      --row-red-hvr:  rgba(239,68,68,.2);
+      --row-red-focus-bdr: rgba(239,68,68,.45);
+      --row-red-focus-bg:  rgba(239,68,68,.04);
+
+      --badge-blue-bg:  rgba(59,130,246,.18);
+      --badge-blue-bdr: rgba(59,130,246,.35);
+      --badge-blue-cl:  #60a5fa;
+      --badge-red-bg:   rgba(239,68,68,.12);
+      --badge-red-bdr:  rgba(239,68,68,.3);
+      --badge-red-cl:   #fca5a5;
+
+      /* Inputs */
+      --inp-bg:  rgba(0,0,0,.3);
+      --inp-bdr: rgba(255,255,255,.07);
+      --inp-focus-bdr: rgba(59,130,246,.45);
+      --inp-focus-sh:  rgba(59,130,246,.12);
+      --inp-focus-bg:  rgba(0,0,0,.45);
+
+      /* Flash */
+      --flash-bg:  rgba(34,197,94,.12);
+      --flash-bdr: rgba(34,197,94,.3);
+      --flash-cl:  #86efac;
+
+      --suit-hdr-bg:  rgba(0,0,0,.25);
+      --suit-cnt-bg:  rgba(255,255,255,.05);
+      --scrollbar-cl: rgba(59,130,246,.35);
+
+      /* Joker panel */
+      --joker-accent:      #f59e0b;
+      --joker-accent-dim:  #d97706;
+      --joker-bg:          rgba(245,158,11,.07);
+      --joker-border:      rgba(245,158,11,.3);
+      --joker-hdr-bg:      rgba(245,158,11,.08);
+      --joker-badge-bg:    rgba(245,158,11,.15);
+      --joker-badge-bdr:   rgba(245,158,11,.35);
+      --joker-row-hvr:     rgba(245,158,11,.15);
+      --joker-row-focus-bdr: rgba(245,158,11,.45);
+      --joker-row-focus-bg:  rgba(245,158,11,.04);
+      --joker-disabled-bg: rgba(0,0,0,.18);
+      --joker-disabled-cl: rgba(255,255,255,.2);
+    }
+
+    [data-theme="light"] {
+      --bg-base:        #f4f0e6;
+      --bg-surface:     #fffcf5;
+      --border-subtle:  rgba(0,0,0,.07);
+      --border-accent:  rgba(180,140,60,.42);
+      --accent:         #b8860b;
+      --accent-bright:  #d4a017;
+      --accent-dim:     #8b6914;
+      --accent-glow:    rgba(180,140,60,.15);
+      --text-primary:   #1c1810;
+      --text-muted:     #78716c;
+      --text-soft:      #57534e;
+      --body-grad1:     rgba(180,140,60,.18);
+
+      --nav-bg:          rgba(253,250,242,.92);
+      --nav-shadow:      rgba(180,140,60,.1);
+      --nav-brand:       #1c1810;
+      --nav-brand-hvr:   #b8860b;
+      --nav-link:        #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+
+      --dd-bg:      #fffcf0;
+      --dd-hdr:     #9ca3af;
+      --dd-item:    #57534e;
+      --dd-hvr-bg:  rgba(180,140,60,.1);
+      --dd-hvr-cl:  #b8860b;
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+      --dd-shadow:  rgba(0,0,0,.18);
+
+      --ctr-bg:  rgba(180,140,60,.12);
+      --ctr-bdr: rgba(180,140,60,.42);
+      --ctr-cl:  #8b6914;
+
+      --divider: rgba(180,140,60,.42);
+
+      --btn-save-from: #8b6914;
+      --btn-save-to:   #c9a227;
+      --btn-save-sh:   rgba(180,140,60,.35);
+      --btn-code-cl:   #8b6914;
+
+      --pnl-bg:  rgba(255,252,245,.88);
+      --pnl-bdr: rgba(180,140,60,.42);
+
+      --red-suit:     #dc2626;
+      --red-suit-bg:  rgba(220,38,38,.1);
+      --red-suit-bdr: rgba(220,38,38,.35);
+
+      --row-bg:       rgba(180,140,60,.04);
+      --row-hvr-bdr:  rgba(180,140,60,.3);
+      --row-focus-bdr:rgba(180,140,60,.55);
+      --row-focus-bg: rgba(180,140,60,.05);
+      --row-red-hvr:  rgba(220,38,38,.15);
+      --row-red-focus-bdr: rgba(220,38,38,.45);
+      --row-red-focus-bg:  rgba(220,38,38,.04);
+
+      --badge-blue-bg:  rgba(180,140,60,.12);
+      --badge-blue-bdr: rgba(180,140,60,.42);
+      --badge-blue-cl:  #8b6914;
+      --badge-red-bg:   rgba(220,38,38,.1);
+      --badge-red-bdr:  rgba(220,38,38,.35);
+      --badge-red-cl:   #b91c1c;
+
+      --inp-bg:  rgba(255,255,255,.8);
+      --inp-bdr: rgba(0,0,0,.1);
+      --inp-focus-bdr: rgba(180,140,60,.55);
+      --inp-focus-sh:  rgba(180,140,60,.12);
+      --inp-focus-bg:  rgba(255,255,255,.95);
+
+      --flash-bg:  rgba(34,197,94,.1);
+      --flash-bdr: rgba(34,197,94,.3);
+      --flash-cl:  #15803d;
+
+      --suit-hdr-bg:  rgba(180,140,60,.06);
+      --suit-cnt-bg:  rgba(0,0,0,.04);
+      --scrollbar-cl: rgba(180,140,60,.4);
+
+      /* Joker panel */
+      --joker-accent:      #d97706;
+      --joker-accent-dim:  #b45309;
+      --joker-bg:          rgba(217,119,6,.06);
+      --joker-border:      rgba(217,119,6,.3);
+      --joker-hdr-bg:      rgba(217,119,6,.07);
+      --joker-badge-bg:    rgba(217,119,6,.12);
+      --joker-badge-bdr:   rgba(217,119,6,.3);
+      --joker-row-hvr:     rgba(217,119,6,.12);
+      --joker-row-focus-bdr: rgba(217,119,6,.45);
+      --joker-row-focus-bg:  rgba(217,119,6,.04);
+      --joker-disabled-bg: rgba(0,0,0,.06);
+      --joker-disabled-cl: rgba(0,0,0,.25);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE
+    ══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-grad1) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    /* Navbar styles → static/css/navbar.css */
+
+    /* ══════════════════════════════════════════════════════════════
+       PAGE HEADER
+    ══════════════════════════════════════════════════════════════ */
+    .page-title   { font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .875rem; color: var(--text-muted); }
+
+    .section-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--divider), transparent);
+      margin: 0 auto;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       FLASH
+    ══════════════════════════════════════════════════════════════ */
+    .alert-success-app {
+      background: var(--flash-bg);
+      border: 1px solid var(--flash-bdr);
+      color: var(--flash-cl);
+      border-radius: 12px;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 12px 18px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SAVE BUTTON
+    ══════════════════════════════════════════════════════════════ */
+    .btn-save {
+      background: linear-gradient(135deg, var(--btn-save-from), var(--btn-save-to));
+      color: #fff;
+      font-weight: 700;
+      font-size: .9rem;
+      padding: 10px 28px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px var(--btn-save-sh);
+      cursor: pointer;
+      transition: opacity .15s, transform .12s;
+      letter-spacing: .3px;
+    }
+    .btn-save:hover  { opacity: .9; transform: translateY(-1px); color: #fff; }
+    .btn-save:active { transform: scale(.97); }
+
+    /* ══════════════════════════════════════════════════════════════
+       SUITS GRID
+    ══════════════════════════════════════════════════════════════ */
+    .suits-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 767.98px) {
+      .suits-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Suit panel ── */
+    .suit-panel {
+      background: var(--pnl-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--pnl-bdr);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .suit-panel.red-suit { border-color: var(--red-suit-bdr); }
+
+    .suit-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--pnl-bdr);
+      background: var(--suit-hdr-bg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .suit-panel.red-suit .suit-header { border-bottom-color: var(--red-suit-bdr); }
+
+    .suit-symbol { font-size: 1.4rem; line-height: 1; }
+    .suit-symbol.red  { color: var(--red-suit); }
+    .suit-symbol.dark { color: var(--text-primary); }
+
+    .suit-title { font-size: .95rem; font-weight: 700; letter-spacing: .5px; color: var(--text-primary); }
+    .suit-count {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      background: var(--suit-cnt-bg);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* ── Card list ── */
+    .suit-cards {
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 520px;
+      flex: 1;
+    }
+    .suit-cards::-webkit-scrollbar { width: 5px; }
+    .suit-cards::-webkit-scrollbar-track { background: transparent; }
+    .suit-cards::-webkit-scrollbar-thumb { background: var(--scrollbar-cl); border-radius: 99px; }
+
+    /* ── Card row ── */
+    .card-row {
+      background: var(--row-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 14px;
+      transition: border-color .15s;
+    }
+    .card-row:hover  { border-color: var(--row-hvr-bdr); }
+    .suit-panel.red-suit .card-row:hover { border-color: var(--row-red-hvr); }
+    .card-row:focus-within { border-color: var(--row-focus-bdr); background: var(--row-focus-bg); }
+    .suit-panel.red-suit .card-row:focus-within {
+      border-color: var(--row-red-focus-bdr);
+      background: var(--row-red-focus-bg);
+    }
+
+    .card-row-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-weight: 800;
+      font-size: .82rem;
+      padding: 2px 9px;
+      border-radius: 6px;
+      letter-spacing: .3px;
+      flex-shrink: 0;
+    }
+    .card-badge.blue-badge {
+      background: var(--badge-blue-bg);
+      border: 1px solid var(--badge-blue-bdr);
+      color: var(--badge-blue-cl);
+    }
+    .card-badge.red-badge {
+      background: var(--badge-red-bg);
+      border: 1px solid var(--badge-red-bdr);
+      color: var(--badge-red-cl);
+    }
+
+    .card-name { font-size: .82rem; font-weight: 600; color: var(--text-soft); }
+
+    /* ── Inputs ── */
+    .task-input {
+      background: var(--inp-bg) !important;
+      border: 1px solid var(--inp-bdr) !important;
+      border-radius: 8px !important;
+      color: var(--text-primary) !important;
+      font-size: .82rem !important;
+      resize: vertical;
+      min-height: 56px;
+      padding: 8px 10px !important;
+      transition: border-color .15s !important;
+      font-family: inherit !important;
+      line-height: 1.45 !important;
+    }
+    .task-input:focus {
+      border-color: var(--inp-focus-bdr) !important;
+      box-shadow: 0 0 0 3px var(--inp-focus-sh) !important;
+      background: var(--inp-focus-bg) !important;
+      outline: none !important;
+    }
+
+    .pts-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .pts-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .pts-input {
+      width: 68px !important;
+      background: var(--inp-bg) !important;
+      border: 1px solid var(--inp-bdr) !important;
+      border-radius: 8px !important;
+      color: var(--text-primary) !important;
+      font-size: .82rem !important;
+      font-weight: 700 !important;
+      padding: 5px 10px !important;
+      text-align: center;
+      transition: border-color .15s !important;
+      -moz-appearance: textfield;
+    }
+    .pts-input::-webkit-outer-spin-button,
+    .pts-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .pts-input:focus {
+      border-color: var(--inp-focus-bdr) !important;
+      box-shadow: 0 0 0 3px var(--inp-focus-sh) !important;
+      outline: none !important;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       JOKER PANEL
+    ══════════════════════════════════════════════════════════════ */
+    .joker-panel {
+      background:    var(--joker-bg);
+      border:        1px solid var(--joker-border);
+      border-radius: 16px;
+      overflow:      hidden;
+    }
+
+    .joker-header {
+      padding:       14px 20px;
+      border-bottom: 1px solid var(--joker-border);
+      background:    var(--joker-hdr-bg);
+      display:       flex;
+      align-items:   center;
+      gap:           10px;
+    }
+
+    .joker-symbol { font-size: 1.4rem; line-height: 1; color: var(--joker-accent); }
+    .joker-title  { font-size: .95rem; font-weight: 700; letter-spacing: .5px; color: var(--text-primary); }
+    .joker-count  {
+      font-size:   .72rem;
+      color:       var(--text-muted);
+      margin-left: auto;
+      background:  var(--suit-cnt-bg);
+      padding:     2px 8px;
+      border-radius: 99px;
+    }
+
+    /* ── AI toggle row ── */
+    .ai-toggle-row {
+      display:     flex;
+      align-items: flex-start;
+      gap:         14px;
+      padding:     16px 20px;
+      border-bottom: 1px solid var(--joker-border);
+    }
+
+    .ai-toggle-label {
+      display:        flex;
+      flex-direction: column;
+      gap:            3px;
+      flex:           1;
+      cursor:         pointer;
+    }
+
+    .ai-toggle-title {
+      font-size:   .9rem;
+      font-weight: 700;
+      color:       var(--text-primary);
+    }
+
+    .ai-toggle-desc {
+      font-size:   .78rem;
+      color:       var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .ai-warning {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           5px;
+      font-size:     .75rem;
+      color:         var(--joker-accent);
+      background:    var(--joker-badge-bg);
+      border:        1px solid var(--joker-badge-bdr);
+      border-radius: 6px;
+      padding:       2px 8px;
+      margin-top:    4px;
+      width:         fit-content;
+    }
+
+    /* Bootstrap switch reskin */
+    .form-check-input:checked {
+      background-color: var(--joker-accent) !important;
+      border-color:     var(--joker-accent) !important;
+    }
+    .form-check-input:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--joker-accent) 25%, transparent) !important;
+    }
+
+    /* ── Joker task grid ── */
+    .joker-tasks {
+      display:               grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:                   12px;
+      padding:               16px 20px;
+    }
+    @media (max-width: 575.98px) {
+      .joker-tasks { grid-template-columns: 1fr; }
+    }
+
+    .joker-card-row {
+      background:    var(--row-bg);
+      border:        1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding:       12px 14px;
+      transition:    border-color .15s, opacity .2s;
+    }
+    .joker-card-row:hover     { border-color: var(--joker-row-hvr); }
+    .joker-card-row:focus-within {
+      border-color: var(--joker-row-focus-bdr);
+      background:   var(--joker-row-focus-bg);
+    }
+
+    .joker-badge {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           3px;
+      font-weight:   800;
+      font-size:     .82rem;
+      padding:       2px 9px;
+      border-radius: 6px;
+      letter-spacing:.3px;
+      background:    var(--joker-badge-bg);
+      border:        1px solid var(--joker-badge-bdr);
+      color:         var(--joker-accent);
+      margin-bottom: 10px;
+    }
+
+    /* ── Disabled state when AI is active ── */
+    .joker-tasks.ai-active .joker-card-row {
+      opacity:        .45;
+      pointer-events: none;
+    }
+    .joker-tasks.ai-active .task-input {
+      background:   var(--joker-disabled-bg) !important;
+      color:        var(--joker-disabled-cl) !important;
+      cursor:       not-allowed !important;
+    }
+
+    /* ── AI provider status pill ── */
+    .ai-status-ok {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           5px;
+      font-size:     .75rem;
+      font-weight:   700;
+      color:         var(--joker-accent);
+      background:    var(--joker-badge-bg);
+      border:        1px solid var(--joker-badge-bdr);
+      border-radius: 6px;
+      padding:       2px 8px;
+      margin-top:    4px;
+      width:         fit-content;
+    }
+
+    /* ── Link to AI Settings page ── */
+    .ai-settings-link {
+      display:     inline-flex;
+      align-items: center;
+      gap:         4px;
+      margin-top:  6px;
+      font-size:   .75rem;
+      font-weight: 600;
+      color:       var(--accent-bright);
+      text-decoration: none;
+      width:       fit-content;
+    }
+    .ai-settings-link:hover { text-decoration: underline; color: var(--accent-bright); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  {% set active_page = 'modify' %}
+  {% set show_counter = true %}
+  {% set show_reset = true %}
+  {% include '_navbar.html' %}
+
+  <!-- ── Main ── -->
+  <div class="container-lg py-4 py-md-5">
+
+    <div class="mb-4">
+      <p class="page-subtitle mb-1">Deck Editor</p>
+      <h1 class="page-title mb-1">Modify Deck</h1>
+      <p class="page-subtitle">Edit the task and points for each of the 52 cards, then save.</p>
+    </div>
+
+    <div class="section-line mb-4"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert-success-app mb-4 d-flex align-items-center gap-2">
+            <span>✅</span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      <p class="mb-0" style="font-size:.82rem; color:var(--text-muted);">
+        Changes are applied to <code style="color:var(--accent-bright)">decks.xml</code> and take effect on the next drawn card.
+      </p>
+      <button form="modify-form" type="submit" class="btn-save">
+        💾&nbsp; Save All Changes
+      </button>
+    </div>
+
+    <form id="modify-form" method="POST" action="/modify">
+      <div class="suits-grid">
+        {% for suit_key, suit in suits.items() %}
+        <div class="suit-panel {% if suit.red %}red-suit{% endif %}">
+          <div class="suit-header">
+            <span class="suit-symbol {% if suit.red %}red{% else %}dark{% endif %}">{{ suit.symbol }}</span>
+            <span class="suit-title">{{ suit.label }}</span>
+            <span class="suit-count">{{ suit.cards | length }} cards</span>
+          </div>
+          <div class="suit-cards">
+            {% for card in suit.cards %}
+            <div class="card-row">
+              <div class="card-row-header">
+                <span class="card-badge {% if suit.red %}red-badge{% else %}blue-badge{% endif %}">
+                  {{ card.value }}{{ suit.symbol }}
+                </span>
+                <span class="card-name">{{ card.name }}</span>
+              </div>
+              <textarea
+                name="task_{{ card.id }}"
+                class="form-control task-input w-100"
+                rows="2"
+                placeholder="Enter task description…">{{ card.task }}</textarea>
+              <div class="pts-row">
+                <span class="pts-label">Points</span>
+                <input type="number" name="points_{{ card.id }}"
+                       class="form-control pts-input"
+                       value="{{ card.points }}" min="0" max="999" />
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- ── Joker Cards ─────────────────────────────────────────────── -->
+      <div class="joker-panel mt-4">
+
+        <!-- Header -->
+        <div class="joker-header">
+          <span class="joker-symbol">★</span>
+          <span class="joker-title">Joker Cards</span>
+          <span class="joker-count">{{ joker_tasks | length }} cards · 10 pts each</span>
+          {# Provider pill — only shown when AI is active #}
+          {% if joker_ai_enabled %}
+            {% if joker_ai_provider == 'ollama' %}
+            <span class="joker-count" style="margin-left:0;">🦙 Ollama</span>
+            {% else %}
+            <span class="joker-count" style="margin-left:0;">🔮 OpenAI</span>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <!-- AI active toggle -->
+        <div class="ai-toggle-row">
+          <div class="form-check form-switch mt-1">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="jokerAiToggle"
+              name="joker_ai_enabled"
+              value="1"
+              {% if joker_ai_enabled %}checked{% endif %}>
+          </div>
+          <label class="ai-toggle-label" for="jokerAiToggle">
+            <span class="ai-toggle-title">AI active</span>
+            <span class="ai-toggle-desc">
+              When enabled, joker tasks are generated fresh every time a new deck
+              is started using the configured AI provider. The tasks below are ignored.
+              When disabled, the tasks you write here are used instead.
+            </span>
+
+            {# ── Provider status: Ollama ── #}
+            {% if joker_ai_provider == 'ollama' %}
+              {% if not ollama_available %}
+              <span class="ai-warning">⚠ ollama package not installed — tasks will use placeholders</span>
+              {% else %}
+              <span class="ai-status-ok">🦙 Ollama · {{ ollama_model }}</span>
+              {% endif %}
+
+            {# ── Provider status: OpenAI ── #}
+            {% else %}
+              {% if not openai_configured %}
+              <span class="ai-warning">⚠ No <code>OPENAI_API_KEY</code> set — AI will fall back to placeholder tasks</span>
+              {% else %}
+              <span class="ai-status-ok">🔮 OpenAI active</span>
+              {% endif %}
+            {% endif %}
+
+            <a class="ai-settings-link" href="/ai">✨ Configure AI provider →</a>
+          </label>
+        </div>
+
+        <!-- 4 Joker task textareas -->
+        <div class="joker-tasks{% if joker_ai_enabled %} ai-active{% endif %}" id="jokerTaskGrid">
+          {% for i in range(1, 5) %}
+          <div class="joker-card-row">
+            <div class="joker-badge">★ Joker {{ i }}</div>
+            <textarea
+              name="joker_task_{{ i }}"
+              class="form-control task-input w-100"
+              rows="3"
+              placeholder="Enter joker task {{ i }}…"
+              {% if joker_ai_enabled %}disabled{% endif %}>{{ joker_tasks[i - 1] }}</textarea>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div><!-- /joker-panel -->
+
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn-save">💾&nbsp; Save All Changes</button>
+      </div>
+    </form>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    (function () {
+      const toggle   = document.getElementById('jokerAiToggle');
+      const grid     = document.getElementById('jokerTaskGrid');
+      const textareas = grid.querySelectorAll('textarea');
+
+      function applyAiState(active) {
+        grid.classList.toggle('ai-active', active);
+        textareas.forEach(function (ta) { ta.disabled = active; });
+      }
+
+      toggle.addEventListener('change', function () {
+        applyAiState(this.checked);
+      });
+    })();
+  </script>
+</body>
+</html>

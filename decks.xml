@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<decks>
+  <card id="2hearts">
+    <name>2 of Hearts</name>
+    <maze>hearts</maze>
+    <task>TEST SAVE: Find the hidden door and unlock it with the golden key.</task>
+    <points>2</points>
+  </card>
+  <card id="3hearts">
+    <name>3 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Heal yourself and recover 3 life points from the fountain.</task>
+    <points>3</points>
+  </card>
+  <card id="4hearts">
+    <name>4 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Rest at the inn for 4 turns and regain your strength.</task>
+    <points>4</points>
+  </card>
+  <card id="5hearts">
+    <name>5 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Discover a secret garden hidden behind the rose hedge.</task>
+    <points>5</points>
+  </card>
+  <card id="6hearts">
+    <name>6 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Share a meal with fellow travelers and gain their trust.</task>
+    <points>6</points>
+  </card>
+  <card id="7hearts">
+    <name>7 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Lucky hearts! Take a shortcut through the enchanted maze.</task>
+    <points>7</points>
+  </card>
+  <card id="8hearts">
+    <name>8 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Follow the red path north toward the crimson tower.</task>
+    <points>8</points>
+  </card>
+  <card id="9hearts">
+    <name>9 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Make a wish at the wishing fountain and draw again.</task>
+    <points>9</points>
+  </card>
+  <card id="10hearts">
+    <name>10 of Hearts</name>
+    <maze>hearts</maze>
+    <task>Find the treasure chest hidden in the east wing chamber.</task>
+    <points>10</points>
+  </card>
+  <card id="Jhearts">
+    <name>Jack of Hearts</name>
+    <maze>hearts</maze>
+    <task>The Jack of Hearts guards the northern gate — answer his riddle to pass.</task>
+    <points>11</points>
+  </card>
+  <card id="Qhearts">
+    <name>Queen of Hearts</name>
+    <maze>hearts</maze>
+    <task>The Queen of Hearts offers you safe passage through her domain.</task>
+    <points>12</points>
+  </card>
+  <card id="Khearts">
+    <name>King of Hearts</name>
+    <maze>hearts</maze>
+    <task>The King of Hearts grants you an extra turn and his blessing.</task>
+    <points>13</points>
+  </card>
+  <card id="Ahearts">
+    <name>Ace of Hearts</name>
+    <maze>hearts</maze>
+    <task>The Ace of Hearts — master of life — teleport to any room in the maze.</task>
+    <points>14</points>
+  </card>
+  <card id="2diamonds">
+    <name>2 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Collect 2 gold coins from the treasure room floor.</task>
+    <points>2</points>
+  </card>
+  <card id="3diamonds">
+    <name>3 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Find a gem hidden inside the maze wall near the east corridor.</task>
+    <points>3</points>
+  </card>
+  <card id="4diamonds">
+    <name>4 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Trade 4 items with another player to unlock the diamond vault.</task>
+    <points>4</points>
+  </card>
+  <card id="5diamonds">
+    <name>5 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Discover a diamond vein in the cavern wall — mine it carefully.</task>
+    <points>5</points>
+  </card>
+  <card id="6diamonds">
+    <name>6 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Pay 6 coins to the merchant to use the secret elevator.</task>
+    <points>6</points>
+  </card>
+  <card id="7diamonds">
+    <name>7 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Lucky diamonds! Double your score this round.</task>
+    <points>7</points>
+  </card>
+  <card id="8diamonds">
+    <name>8 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Trade positions with the wealthiest player in the maze.</task>
+    <points>8</points>
+  </card>
+  <card id="9diamonds">
+    <name>9 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Unlock the gem-encrusted door with the key you found earlier.</task>
+    <points>9</points>
+  </card>
+  <card id="10diamonds">
+    <name>10 of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>Find the merchant's treasure map leading to the final chamber.</task>
+    <points>10</points>
+  </card>
+  <card id="Jdiamonds">
+    <name>Jack of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>The Jack of Diamonds reveals a hidden path behind the waterfall.</task>
+    <points>11</points>
+  </card>
+  <card id="Qdiamonds">
+    <name>Queen of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>The Queen of Diamonds shows you the shortest route to the exit.</task>
+    <points>12</points>
+  </card>
+  <card id="Kdiamonds">
+    <name>King of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>The King of Diamonds fills your coin purse — gain 5 bonus points.</task>
+    <points>13</points>
+  </card>
+  <card id="Adiamonds">
+    <name>Ace of Diamonds</name>
+    <maze>diamonds</maze>
+    <task>The Ace of Diamonds — master of wealth — claim the grand prize chest.</task>
+    <points>14</points>
+  </card>
+  <card id="2clubs">
+    <name>2 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Follow the forest trail deeper into the ancient woods.</task>
+    <points>2</points>
+  </card>
+  <card id="3clubs">
+    <name>3 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Climb the ancient oak tree for a better view of the maze layout.</task>
+    <points>3</points>
+  </card>
+  <card id="4clubs">
+    <name>4 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Cross the mossy bridge over the underground stream.</task>
+    <points>4</points>
+  </card>
+  <card id="5clubs">
+    <name>5 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Find the druid's clearing and receive ancient wisdom.</task>
+    <points>5</points>
+  </card>
+  <card id="6clubs">
+    <name>6 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Gather rare herbs from the forest floor for a healing potion.</task>
+    <points>6</points>
+  </card>
+  <card id="7clubs">
+    <name>7 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Lucky clubs! Discover a secret forest path that skips 3 rooms.</task>
+    <points>7</points>
+  </card>
+  <card id="8clubs">
+    <name>8 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Lost in the dark forest — retrace your steps and go back 3 spaces.</task>
+    <points>8</points>
+  </card>
+  <card id="9clubs">
+    <name>9 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Challenge the forest spirit to a riddle — success grants free passage.</task>
+    <points>9</points>
+  </card>
+  <card id="10clubs">
+    <name>10 of Clubs</name>
+    <maze>clubs</maze>
+    <task>Discover the ancient tree-maze entrance carved into the giant oak.</task>
+    <points>10</points>
+  </card>
+  <card id="Jclubs">
+    <name>Jack of Clubs</name>
+    <maze>clubs</maze>
+    <task>The Jack of Clubs opens the forest gate with a secret knock.</task>
+    <points>11</points>
+  </card>
+  <card id="Qclubs">
+    <name>Queen of Clubs</name>
+    <maze>clubs</maze>
+    <task>The Queen of Clubs commands the forest creatures to guide you safely.</task>
+    <points>12</points>
+  </card>
+  <card id="Kclubs">
+    <name>King of Clubs</name>
+    <maze>clubs</maze>
+    <task>The King of Clubs grants you free passage through the dark forest.</task>
+    <points>13</points>
+  </card>
+  <card id="Aclubs">
+    <name>Ace of Clubs</name>
+    <maze>clubs</maze>
+    <task>The Ace of Clubs — master of nature — grow a new path through the maze.</task>
+    <points>14</points>
+  </card>
+  <card id="2spades">
+    <name>2 of Spades</name>
+    <maze>spades</maze>
+    <task>Dig through the underground tunnel using your trusty spade.</task>
+    <points>2</points>
+  </card>
+  <card id="3spades">
+    <name>3 of Spades</name>
+    <maze>spades</maze>
+    <task>Find the burial chamber shortcut below the stone floor.</task>
+    <points>3</points>
+  </card>
+  <card id="4spades">
+    <name>4 of Spades</name>
+    <maze>spades</maze>
+    <task>Unearth a hidden artifact buried beneath the ancient ruins.</task>
+    <points>4</points>
+  </card>
+  <card id="5spades">
+    <name>5 of Spades</name>
+    <maze>spades</maze>
+    <task>Navigate the dark catacombs without light — trust your instincts.</task>
+    <points>5</points>
+  </card>
+  <card id="6spades">
+    <name>6 of Spades</name>
+    <maze>spades</maze>
+    <task>Cross the underground river on a crumbling stone bridge.</task>
+    <points>6</points>
+  </card>
+  <card id="7spades">
+    <name>7 of Spades</name>
+    <maze>spades</maze>
+    <task>Lucky spades! Excavate a secret underground passage to the next level.</task>
+    <points>7</points>
+  </card>
+  <card id="8spades">
+    <name>8 of Spades</name>
+    <maze>spades</maze>
+    <task>Cave-in! The path collapses — move back 4 spaces to safety.</task>
+    <points>8</points>
+  </card>
+  <card id="9spades">
+    <name>9 of Spades</name>
+    <maze>spades</maze>
+    <task>Solve the ancient tomb's puzzle to reveal the hidden door.</task>
+    <points>9</points>
+  </card>
+  <card id="10spades">
+    <name>10 of Spades</name>
+    <maze>spades</maze>
+    <task>Find the underground maze map etched on the catacomb ceiling.</task>
+    <points>10</points>
+  </card>
+  <card id="Jspades">
+    <name>Jack of Spades</name>
+    <maze>spades</maze>
+    <task>The Jack of Spades guards the underground realm — prove your worth.</task>
+    <points>11</points>
+  </card>
+  <card id="Qspades">
+    <name>Queen of Spades</name>
+    <maze>spades</maze>
+    <task>The Queen of Spades opens the obsidian gate with a gesture of power.</task>
+    <points>12</points>
+  </card>
+  <card id="Kspades">
+    <name>King of Spades</name>
+    <maze>spades</maze>
+    <task>The King of Spades commands the underworld — all dark paths open for you.</task>
+    <points>13</points>
+  </card>
+  <card id="Aspades">
+    <name>Ace of Spades</name>
+    <maze>spades</maze>
+    <task>The Ace of Spades — master of fate — choose your own destiny in the maze.</task>
+    <points>14</points>
+  </card>
+</decks>

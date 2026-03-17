@@ -1,0 +1,167 @@
+/* ── Card Maze — Shared Navbar Styles ──────────────────────────────────────
+   All CSS variables used here are defined per-page in each template's
+   inline <style> block (theme tokens). This file only contains the rules.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Mobile-only suit badges — always visible, centred between brand & toggler ── */
+.suit-scores-mobile {
+  /*
+   * position: fixed keeps the badges relative to the VIEWPORT,
+   * so they are completely unaffected by the navbar expanding
+   * when the hamburger menu opens.
+   */
+  position: fixed;
+  top: 0;
+  left: 52px;   /* clear the brand icon (px-3 16px + icon 28px + gap 8px) */
+  right: 58px;  /* clear the toggler  (px-3 16px + btn ~34px + ms-2 8px) */
+  height: 58px; /* match the navbar single-row height */
+  /* Centre badges inside the reserved strip */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: nowrap !important;
+  overflow: hidden;
+  pointer-events: none; /* let brand / toggler clicks pass through underneath */
+  z-index: 1031;        /* just above Bootstrap's fixed-top navbar (1030) */
+}
+/* flex: 1 makes every badge claim an equal share of the container width,
+   so they always fit in one line regardless of screen size.
+   Specificity 0-2-0 beats the 0-1-0 .suit-badge rule in each page's <style>. */
+.suit-scores-mobile .suit-badge {
+  pointer-events: auto; /* re-enable taps even though container is none */
+  flex: 1 1 0;          /* equal share — always fits in one line */
+  min-width: 0;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 2px 0;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.navbar-app {
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-accent);
+  box-shadow: 0 1px 24px var(--nav-shadow);
+}
+
+.navbar-app .navbar-brand {
+  color: var(--nav-brand);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.navbar-app .navbar-brand .brand-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--accent-dim), var(--accent-bright));
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .95rem;
+}
+.navbar-app .navbar-brand:hover { color: var(--nav-brand-hvr); }
+
+.navbar-app .navbar-toggler {
+  border-color: var(--border-accent);
+  padding: 4px 8px;
+}
+.navbar-app .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(148,163,184,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+[data-theme="light"] .navbar-app .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(87,83,78,0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-app .nav-link {
+  color: var(--nav-link);
+  font-size: .875rem;
+  font-weight: 500;
+  padding: .4rem .85rem;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+}
+.navbar-app .nav-link:hover,
+.navbar-app .nav-link.active {
+  color: var(--text-primary);
+  background: var(--nav-link-hvr-bg);
+}
+
+.navbar-app .dropdown-menu {
+  background: var(--dd-bg);
+  border: 1px solid var(--border-accent);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px var(--dd-shadow), 0 0 0 1px rgba(0,0,0,.05);
+  min-width: 180px;
+  padding: 6px;
+}
+.navbar-app .dropdown-header {
+  color: var(--dd-hdr);
+  font-size: .7rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 10px 4px;
+}
+.navbar-app .dropdown-item {
+  color: var(--dd-item);
+  font-size: .875rem;
+  font-weight: 500;
+  padding: .55rem .85rem;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.navbar-app .dropdown-item:hover {
+  background: var(--dd-hvr-bg);
+  color: var(--dd-hvr-cl);
+}
+.navbar-app .dropdown-item.item-active {
+  background: var(--dd-active-bg);
+  color: var(--dd-active-cl);
+}
+.navbar-app .dropdown-item.item-danger { color: #f87171; }
+.navbar-app .dropdown-item.item-danger:hover {
+  background: rgba(220,38,38,.12);
+  color: #fca5a5;
+}
+.navbar-app .dropdown-divider { border-color: var(--border-subtle); margin: 4px 0; }
+
+.theme-check {
+  font-size: .8rem;
+  width: 14px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity .15s;
+  color: var(--accent-bright);
+}
+
+#nav-counter {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .5px;
+  background: var(--ctr-bg);
+  border: 1px solid var(--ctr-bdr);
+  color: var(--ctr-cl);
+  padding: 4px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+#nav-counter.empty {
+  color: var(--ctr-empty-cl);
+  border-color: var(--ctr-empty-bdr);
+  background: var(--ctr-empty-bg);
+}
+
+/* Very small phones (≤ 360 px) — slightly tighter gap, same font */
+@media (max-width: 360px) {
+  .suit-scores-mobile { gap: 2px; }
+}

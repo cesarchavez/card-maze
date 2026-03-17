@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cookie Policy - {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    :root, [data-theme="dark"] {
+      --bg-base: #05080f;
+      --border-accent: rgba(59,130,246,.35);
+      --border-subtle: rgba(255,255,255,.07);
+      --accent: #3b82f6;
+      --accent-bright: #60a5fa;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --nav-bg: rgba(5,8,15,.88);
+      --nav-shadow: rgba(59,130,246,.08);
+      --nav-brand: #f1f5f9;
+      --nav-brand-hvr: #60a5fa;
+      --nav-link: #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+      --dd-bg: #0d1627;
+      --dd-hdr: #64748b;
+      --dd-item: #94a3b8;
+      --dd-hvr-bg: rgba(59,130,246,.12);
+      --dd-hvr-cl: #60a5fa;
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+      --dd-shadow: rgba(0,0,0,.6);
+      --panel-bg: rgba(13,22,39,.65);
+      --panel-border: rgba(59,130,246,.35);
+      --btn-from: #1d4ed8;
+      --btn-to: #3b82f6;
+      --btn-shadow: rgba(59,130,246,.35);
+      --body-glow: rgba(29,78,216,.2);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f4f0e6;
+      --border-accent: rgba(180,140,60,.42);
+      --border-subtle: rgba(0,0,0,.07);
+      --accent: #b8860b;
+      --accent-bright: #d4a017;
+      --text-primary: #1c1810;
+      --text-muted: #78716c;
+      --nav-bg: rgba(253,250,242,.92);
+      --nav-shadow: rgba(180,140,60,.1);
+      --nav-brand: #1c1810;
+      --nav-brand-hvr: #b8860b;
+      --nav-link: #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+      --dd-bg: #fffcf0;
+      --dd-hdr: #9ca3af;
+      --dd-item: #57534e;
+      --dd-hvr-bg: rgba(180,140,60,.1);
+      --dd-hvr-cl: #b8860b;
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+      --dd-shadow: rgba(0,0,0,.18);
+      --panel-bg: rgba(255,252,245,.88);
+      --panel-border: rgba(180,140,60,.42);
+      --btn-from: #8b6914;
+      --btn-to: #c9a227;
+      --btn-shadow: rgba(180,140,60,.35);
+      --body-glow: rgba(180,140,60,.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-glow) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    .page-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .9rem; color: var(--text-muted); }
+
+    .section-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+
+    .policy-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    .section-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent-bright);
+      margin-top: 1.75rem;
+      margin-bottom: .5rem;
+      letter-spacing: .3px;
+    }
+
+    .policy-text {
+      font-size: .9rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .policy-text strong { color: var(--text-primary); font-weight: 600; }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+      margin-top: .75rem;
+    }
+    .data-table th {
+      text-align: left;
+      padding: .5rem .75rem;
+      border-bottom: 1px solid var(--border-accent);
+      color: var(--accent-bright);
+      font-weight: 600;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .data-table td {
+      padding: .5rem .75rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+    .data-table td:first-child { color: var(--text-primary); font-weight: 500; white-space: nowrap; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--accent-bright); }
+  </style>
+</head>
+<body>
+  {% include '_navbar.html' %}
+
+  <div class="container py-4" style="max-width:720px;">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <div class="policy-icon">🍪</div>
+      <h1 class="page-title">Cookie Policy</h1>
+      <p class="page-subtitle mt-1">How {{ app_title }} uses browser cookies to store your run data</p>
+    </div>
+
+    <div class="section-line"></div>
+
+    <div class="settings-panel">
+
+      <div class="section-heading">What are cookies?</div>
+      <p class="policy-text">
+        Cookies are small pieces of data stored in your browser by a website. This app uses a
+        <strong>server-side session cookie</strong> — a single cookie that acts as a key to data
+        held temporarily on the server while your browser window is open.
+      </p>
+
+      <div class="section-heading">What data is stored?</div>
+      <p class="policy-text">
+        The following information is kept in your session to make the game work across page
+        navigations (for example, visiting a prize page and returning to the deck):
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Deck order</td>
+            <td>The shuffled sequence of cards remaining in your current run</td>
+          </tr>
+          <tr>
+            <td>Current card</td>
+            <td>The card drawn but not yet marked as completed, so it is restored if you navigate away</td>
+          </tr>
+          <tr>
+            <td>Scores</td>
+            <td>Your accumulated points per suit (Hearts, Diamonds, Clubs, Spades, Joker)</td>
+          </tr>
+          <tr>
+            <td>Completed cards</td>
+            <td>The list of card IDs you have finished in the current run, used for the share feature</td>
+          </tr>
+          <tr>
+            <td>Seed</td>
+            <td>The daily shared seed (or a custom seed) that determines the deck shuffle for reproducibility</td>
+          </tr>
+          <tr>
+            <td>Username</td>
+            <td>Your chosen display name within the app (stored only if a login system is enabled)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-heading">No tracking, no third parties</div>
+      <p class="policy-text">
+        This app uses <strong>no third-party cookies</strong>, analytics, advertising trackers, or
+        fingerprinting. The session cookie is strictly functional — without it, your progress
+        would be lost every time you navigate to a different page.
+      </p>
+
+      <div class="section-heading">How long is data kept?</div>
+      <p class="policy-text">
+        Session data lives only as long as your browser session. Closing the browser tab or
+        window (or clearing cookies) removes it. No run data is permanently stored on the server
+        beyond what you explicitly save using the <strong>Save Run Results</strong> feature.
+      </p>
+
+      <div class="section-heading">How to remove cookies</div>
+      <p class="policy-text">
+        You can clear the session at any time by using your browser's
+        <strong>Clear Cookies</strong> or <strong>Clear Browsing Data</strong> option for this
+        site. Resetting the deck from the app menu will also start a fresh session.
+      </p>
+
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/" class="back-link">← Back to the deck</a>
+    </div>
+
+  </div>
+</body>
+</html>

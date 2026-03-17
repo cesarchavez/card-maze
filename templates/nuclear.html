@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuclear Reset — {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+
+  <style>
+    :root, [data-theme="dark"] {
+      --bg-base: #05080f;
+      --border-accent: rgba(59,130,246,.35);
+      --border-subtle: rgba(255,255,255,.07);
+      --accent: #3b82f6;
+      --accent-bright: #60a5fa;
+      --accent-dim: #1d4ed8;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --panel-bg: rgba(13,22,39,.7);
+      --panel-border: rgba(59,130,246,.35);
+      --flash-bg: rgba(34,197,94,.12);
+      --flash-bdr: rgba(34,197,94,.3);
+      --flash-cl: #86efac;
+      --btn-from: #991b1b;
+      --btn-to: #dc2626;
+      --btn-shadow: rgba(220,38,38,.3);
+      --body-glow: rgba(29,78,216,.2);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f4f0e6;
+      --border-accent: rgba(180,140,60,.42);
+      --border-subtle: rgba(0,0,0,.07);
+      --accent: #b8860b;
+      --accent-bright: #d4a017;
+      --accent-dim: #8b6914;
+      --text-primary: #1c1810;
+      --text-muted: #78716c;
+      --panel-bg: rgba(255,252,245,.9);
+      --panel-border: rgba(180,140,60,.42);
+      --flash-bg: rgba(34,197,94,.1);
+      --flash-bdr: rgba(34,197,94,.3);
+      --flash-cl: #15803d;
+      --btn-from: #991b1b;
+      --btn-to: #dc2626;
+      --btn-shadow: rgba(220,38,38,.22);
+      --body-glow: rgba(180,140,60,.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-glow) 0%, transparent 70%);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 1.25rem;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 16px 48px rgba(0,0,0,.18);
+    }
+
+    .eyebrow {
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .5rem;
+    }
+
+    .title {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: -.04em;
+      margin: 0 0 .65rem;
+    }
+
+    .subtitle {
+      font-size: .92rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      line-height: 1.6;
+    }
+
+    .alert-success-app {
+      background: var(--flash-bg);
+      border: 1px solid var(--flash-bdr);
+      color: var(--flash-cl);
+      border-radius: 14px;
+      padding: .95rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-nuclear {
+      border: 0;
+      border-radius: 14px;
+      padding: 1rem 1.5rem;
+      width: 100%;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+      box-shadow: 0 12px 30px var(--btn-shadow);
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="panel">
+      <p class="eyebrow">Danger Zone</p>
+      <h1 class="title">Nuclear Reset</h1>
+      <p class="subtitle">This action clears the app database, removes all results, removes all users, and recreates only <strong>testuser</strong> with id <strong>1</strong>.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert-success-app">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/nuclear">
+        <button type="submit" class="btn-nuclear">Reset the app database</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+services:
+  cardmaze:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"   # change the left side to expose on a different host port
+    volumes:
+      - ./instance:/instance   # persistent data: db, xml, prize images
+    environment:
+      # REQUIRED — set a strong random value in production:
+      #   python3 -c "import secrets; print(secrets.token_hex(32))"
+      SECRET_KEY: ${SECRET_KEY:-change-me-generate-with-secrets-token-hex-32}
+
+      # Login password for the active user (default: changeme — CHANGE THIS)
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+
+      # Optional — only needed for AI-generated joker tasks:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL:   ${OPENAI_MODEL:-gpt-4.1-mini}
+
+      # Optional — set to "debug" for verbose Gunicorn output:
+      LOG_LEVEL: ${LOG_LEVEL:-info}

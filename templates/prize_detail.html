@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ prize.title }} — {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    :root, [data-theme="dark"] {
+      --bg-base: #05080f;
+      --body-grad1: rgba(29,78,216,.2);
+      --text-primary: #f1f5f9;
+      --text-soft: #94a3b8;
+      --text-muted: #64748b;
+      --border-subtle: rgba(255,255,255,.07);
+      --border-accent: rgba(59,130,246,.35);
+      --accent: #3b82f6;
+      --accent-bright: #60a5fa;
+      --accent-dim: #1d4ed8;
+      --nav-bg: rgba(5,8,15,.88);
+      --nav-shadow: rgba(59,130,246,.08);
+      --nav-brand: #f1f5f9;
+      --nav-brand-hvr: #60a5fa;
+      --nav-link: #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+      --dd-bg: #0d1627;
+      --dd-hdr: #64748b;
+      --dd-item: #94a3b8;
+      --dd-hvr-bg: rgba(59,130,246,.12);
+      --dd-hvr-cl: #60a5fa;
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+      --dd-shadow: rgba(0,0,0,.6);
+      --panel-bg: rgba(13,22,39,.78);
+      --panel-shadow: rgba(0,0,0,.45);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f4f0e6;
+      --body-grad1: rgba(180,140,60,.15);
+      --text-primary: #1c1810;
+      --text-soft: #57534e;
+      --text-muted: #78716c;
+      --border-subtle: rgba(0,0,0,.07);
+      --border-accent: rgba(180,140,60,.42);
+      --accent: #b8860b;
+      --accent-bright: #d4a017;
+      --accent-dim: #8b6914;
+      --nav-bg: rgba(253,250,242,.92);
+      --nav-shadow: rgba(180,140,60,.1);
+      --nav-brand: #1c1810;
+      --nav-brand-hvr: #b8860b;
+      --nav-link: #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+      --dd-bg: #fffcf0;
+      --dd-hdr: #9ca3af;
+      --dd-item: #57534e;
+      --dd-hvr-bg: rgba(180,140,60,.1);
+      --dd-hvr-cl: #b8860b;
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+      --dd-shadow: rgba(0,0,0,.18);
+      --panel-bg: rgba(255,252,245,.9);
+      --panel-shadow: rgba(100,80,30,.12);
+    }
+
+    {% if suit == 'hearts' %}
+    :root, [data-theme="dark"] { --suit-color: #f87171; --suit-glow: rgba(248,113,113,.34); --suit-bg: rgba(248,113,113,.12); --page-glow: rgba(248,113,113,.14); }
+    [data-theme="light"] { --suit-color: #dc2626; --suit-glow: rgba(220,38,38,.2); --suit-bg: rgba(248,113,113,.12); --page-glow: rgba(220,38,38,.1); }
+    {% elif suit == 'diamonds' %}
+    :root, [data-theme="dark"] { --suit-color: #fbbf24; --suit-glow: rgba(251,191,36,.34); --suit-bg: rgba(251,191,36,.12); --page-glow: rgba(251,191,36,.14); }
+    [data-theme="light"] { --suit-color: #d97706; --suit-glow: rgba(217,119,6,.2); --suit-bg: rgba(251,191,36,.12); --page-glow: rgba(217,119,6,.1); }
+    {% elif suit == 'clubs' %}
+    :root, [data-theme="dark"] { --suit-color: #4ade80; --suit-glow: rgba(74,222,128,.34); --suit-bg: rgba(74,222,128,.12); --page-glow: rgba(74,222,128,.14); }
+    [data-theme="light"] { --suit-color: #16a34a; --suit-glow: rgba(22,163,74,.2); --suit-bg: rgba(74,222,128,.12); --page-glow: rgba(22,163,74,.1); }
+    {% elif suit == 'joker' %}
+    :root, [data-theme="dark"] { --suit-color: #facc15; --suit-glow: rgba(250,204,21,.34); --suit-bg: rgba(250,204,21,.12); --page-glow: rgba(96,165,250,.16); }
+    [data-theme="light"] { --suit-color: #ca8a04; --suit-glow: rgba(202,138,4,.2); --suit-bg: rgba(250,204,21,.12); --page-glow: rgba(37,99,235,.08); }
+    {% else %}
+    :root, [data-theme="dark"] { --suit-color: #93c5fd; --suit-glow: rgba(147,197,253,.34); --suit-bg: rgba(147,197,253,.12); --page-glow: rgba(147,197,253,.14); }
+    [data-theme="light"] { --suit-color: #2563eb; --suit-glow: rgba(37,99,235,.2); --suit-bg: rgba(147,197,253,.12); --page-glow: rgba(37,99,235,.1); }
+    {% endif %}
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-grad1) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 60% at 85% 15%, var(--page-glow) 0%, transparent 60%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    .detail-shell {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .detail-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-accent);
+      border-radius: 30px;
+      padding: 1.5rem 1.5rem 2rem;
+      box-shadow: 0 24px 70px var(--panel-shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .detail-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-back {
+      color: var(--text-soft);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .detail-kicker {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: var(--suit-color);
+      font-weight: 800;
+      margin: 0 0 .35rem;
+    }
+
+    .detail-title {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -.04em;
+      margin: 0 0 .5rem;
+    }
+
+    .detail-subtitle {
+      color: var(--text-soft);
+      margin: 0 0 1.5rem;
+      font-size: .95rem;
+    }
+
+    .image-stage {
+      position: relative;
+      border-radius: 28px;
+      padding: 1.5rem;
+      background:
+        radial-gradient(circle at 50% 50%, var(--suit-bg) 0%, transparent 70%),
+        rgba(255,255,255,.02);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .image-frame {
+      width: 100%;
+      min-height: 420px;
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.08));
+      box-shadow:
+        0 28px 60px rgba(0,0,0,.28),
+        0 0 50px var(--suit-glow),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+
+    .image-frame img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .image-placeholder {
+      width: 100%;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--suit-color);
+      font-size: clamp(6rem, 18vw, 10rem);
+      text-shadow: 0 0 40px var(--suit-glow);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+    }
+
+    .detail-copy {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .detail-copy p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    @media (max-width: 640px) {
+      .detail-card { padding: 1rem 1rem 1.5rem; }
+      .image-frame, .image-placeholder { min-height: 280px; }
+      .detail-top { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  {% set active_page = 'prize' %}
+  {% include '_navbar.html' %}
+
+  <main class="detail-shell">
+    <section class="detail-card">
+      <div class="detail-top">
+        <a class="detail-back" href="{{ url_for('prize', suit=suit) }}">← Back to {{ meta.label }} prizes</a>
+        <div class="detail-kicker">{{ meta.label }} Prize {{ prize.slot }}</div>
+      </div>
+
+      <h1 class="detail-title">{{ prize.title }}</h1>
+      <p class="detail-subtitle">Unlocked at {{ score }} points in {{ meta.label }}.</p>
+
+      <div class="image-stage">
+        <div class="image-frame">
+          {% if prize.has_image %}
+          <img src="{{ url_for('static', filename='prize_images/' + prize.image) }}" alt="{{ prize.title }}" />
+          {% else %}
+          <div class="image-placeholder">{{ meta.symbol }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="detail-copy">
+        <p>{{ prize.description }}</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</body>
+</html>

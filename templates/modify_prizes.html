@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prizes — {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    /* ── THEME TOKENS ─────────────────────────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg-base:           #05080f;
+      --border-accent:     rgba(59,130,246,.35);
+      --border-subtle:     rgba(255,255,255,.07);
+      --accent:            #3b82f6;
+      --accent-bright:     #60a5fa;
+      --accent-dim:        #1d4ed8;
+      --text-primary:      #f1f5f9;
+      --text-muted:        #64748b;
+      --text-soft:         #94a3b8;
+      --body-glow:         rgba(29,78,216,.2);
+
+      --nav-bg:            rgba(5,8,15,.88);
+      --nav-shadow:        rgba(59,130,246,.08);
+      --nav-brand:         #f1f5f9;
+      --nav-brand-hvr:     #60a5fa;
+      --nav-link:          #94a3b8;
+      --nav-link-hvr-bg:   rgba(255,255,255,.06);
+      --dd-bg:             #0d1627;
+      --dd-hdr:            #64748b;
+      --dd-item:           #94a3b8;
+      --dd-hvr-bg:         rgba(59,130,246,.12);
+      --dd-hvr-cl:         #60a5fa;
+      --dd-active-bg:      rgba(59,130,246,.18);
+      --dd-active-cl:      #60a5fa;
+      --dd-shadow:         rgba(0,0,0,.6);
+
+      --panel-bg:          rgba(13,22,39,.65);
+      --panel-border:      rgba(59,130,246,.35);
+      --card-bg:           rgba(255,255,255,.03);
+      --card-border:       rgba(255,255,255,.07);
+      --input-bg:          rgba(0,0,0,.3);
+      --input-border:      rgba(255,255,255,.1);
+      --input-focus-bdr:   rgba(59,130,246,.5);
+      --input-focus-sh:    rgba(59,130,246,.12);
+      --flash-bg:          rgba(34,197,94,.12);
+      --flash-bdr:         rgba(34,197,94,.3);
+      --flash-cl:          #86efac;
+      --btn-from:          #1d4ed8;
+      --btn-to:            #3b82f6;
+      --btn-shadow:        rgba(59,130,246,.35);
+      --upload-bg:         rgba(59,130,246,.06);
+      --upload-border:     rgba(59,130,246,.25);
+      --upload-hover-bg:   rgba(59,130,246,.12);
+      --upload-hover-bdr:  rgba(59,130,246,.5);
+      --img-placeholder:   rgba(255,255,255,.04);
+
+      --s-hearts:    #ef4444;
+      --s-diamonds:  #f97316;
+      --s-clubs:     #94a3b8;
+      --s-spades:    #60a5fa;
+    }
+
+    [data-theme="light"] {
+      --bg-base:           #f4f0e6;
+      --border-accent:     rgba(180,140,60,.42);
+      --border-subtle:     rgba(0,0,0,.07);
+      --accent:            #b8860b;
+      --accent-bright:     #d4a017;
+      --accent-dim:        #8b6914;
+      --text-primary:      #1c1810;
+      --text-muted:        #78716c;
+      --text-soft:         #57534e;
+      --body-glow:         rgba(180,140,60,.18);
+
+      --nav-bg:            rgba(253,250,242,.92);
+      --nav-shadow:        rgba(180,140,60,.1);
+      --nav-brand:         #1c1810;
+      --nav-brand-hvr:     #b8860b;
+      --nav-link:          #57534e;
+      --nav-link-hvr-bg:   rgba(180,140,60,.08);
+      --dd-bg:             #fffcf0;
+      --dd-hdr:            #9ca3af;
+      --dd-item:           #57534e;
+      --dd-hvr-bg:         rgba(180,140,60,.1);
+      --dd-hvr-cl:         #b8860b;
+      --dd-active-bg:      rgba(180,140,60,.15);
+      --dd-active-cl:      #8b6914;
+      --dd-shadow:         rgba(0,0,0,.18);
+
+      --panel-bg:          rgba(255,252,245,.88);
+      --panel-border:      rgba(180,140,60,.42);
+      --card-bg:           rgba(255,255,255,.55);
+      --card-border:       rgba(0,0,0,.07);
+      --input-bg:          rgba(255,255,255,.8);
+      --input-border:      rgba(0,0,0,.1);
+      --input-focus-bdr:   rgba(180,140,60,.55);
+      --input-focus-sh:    rgba(180,140,60,.12);
+      --flash-bg:          rgba(34,197,94,.1);
+      --flash-bdr:         rgba(34,197,94,.3);
+      --flash-cl:          #15803d;
+      --btn-from:          #8b6914;
+      --btn-to:            #c9a227;
+      --btn-shadow:        rgba(180,140,60,.35);
+      --upload-bg:         rgba(180,140,60,.05);
+      --upload-border:     rgba(180,140,60,.3);
+      --upload-hover-bg:   rgba(180,140,60,.1);
+      --upload-hover-bdr:  rgba(180,140,60,.55);
+      --img-placeholder:   rgba(0,0,0,.04);
+
+      --s-hearts:    #dc2626;
+      --s-diamonds:  #ea580c;
+      --s-clubs:     #57534e;
+      --s-spades:    #2563eb;
+    }
+
+    /* ── BASE ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-glow) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    /* Navbar styles → static/css/navbar.css */
+
+    /* ── PAGE HEADER ──────────────────────────────────────────────── */
+    .page-title    { font-size: clamp(1.5rem,3vw,2rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .9rem; color: var(--text-muted); }
+    .section-line  {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+      margin-bottom: 1.75rem;
+    }
+    .flash-msg {
+      background: var(--flash-bg);
+      border: 1px solid var(--flash-bdr);
+      color: var(--flash-cl);
+      border-radius: 14px;
+      padding: .85rem 1rem;
+    }
+
+    /* ── SUIT SECTION ─────────────────────────────────────────────── */
+    .suit-section {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 22px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .suit-section-header {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: .9rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .suit-icon {
+      width: 38px; height: 38px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .suit-section[data-suit="hearts"]   .suit-icon { background: rgba(239,68,68,.15);  color: var(--s-hearts);   }
+    .suit-section[data-suit="diamonds"] .suit-icon { background: rgba(249,115,22,.15); color: var(--s-diamonds); }
+    .suit-section[data-suit="clubs"]    .suit-icon { background: rgba(148,163,184,.1); color: var(--s-clubs);    }
+    .suit-section[data-suit="spades"]   .suit-icon { background: rgba(59,130,246,.15); color: var(--s-spades);   }
+
+    .suit-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -.2px;
+      margin: 0;
+    }
+    .suit-section[data-suit="hearts"]   .suit-title { color: var(--s-hearts);   }
+    .suit-section[data-suit="diamonds"] .suit-title { color: var(--s-diamonds); }
+    .suit-section[data-suit="clubs"]    .suit-title { color: var(--s-clubs);    }
+    .suit-section[data-suit="spades"]   .suit-title { color: var(--s-spades);   }
+
+    /* ── PRIZE CARD ───────────────────────────────────────────────── */
+    .prize-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      height: 100%;
+    }
+    .prize-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      border-radius: 99px;
+      padding: 3px 10px;
+      margin-bottom: 1rem;
+    }
+
+    /* ── FORM CONTROLS ────────────────────────────────────────────── */
+    .field-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: .45rem;
+    }
+    .form-control {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      width: 100%;
+      font-family: inherit;
+      font-size: .875rem;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-control:focus {
+      outline: none;
+      background: var(--input-bg);
+      color: var(--text-primary);
+      border-color: var(--input-focus-bdr);
+      box-shadow: 0 0 0 3px var(--input-focus-sh);
+    }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.55;
+    }
+
+    /* ── IMAGE UPLOAD AREA ────────────────────────────────────────── */
+    .img-upload-wrap { margin: .9rem 0 .9rem; }
+
+    .img-preview-box {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--img-placeholder);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: .6rem;
+      position: relative;
+    }
+    .img-preview-box img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    .img-placeholder-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .35rem;
+      color: var(--text-muted);
+    }
+    .img-placeholder-inner .ph-icon { font-size: 2rem; opacity: .4; }
+    .img-placeholder-inner .ph-text { font-size: .72rem; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; opacity: .5; }
+
+    .upload-row {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      flex-wrap: wrap;
+    }
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .78rem;
+      font-weight: 600;
+      padding: .45rem .9rem;
+      border-radius: 8px;
+      background: var(--upload-bg);
+      border: 1px solid var(--upload-border);
+      color: var(--accent-bright);
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .upload-btn:hover { background: var(--upload-hover-bg); border-color: var(--upload-hover-bdr); }
+    .upload-btn input[type="file"] { display: none; }
+
+    .clear-img-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .72rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .clear-img-label input { accent-color: #ef4444; }
+    .clear-img-label:hover { color: #f87171; }
+
+    .filename-hint {
+      font-size: .68rem;
+      color: var(--text-muted);
+      margin-top: .25rem;
+      min-height: 1em;
+    }
+
+    /* ── SAVE BUTTON ──────────────────────────────────────────────── */
+    .btn-save {
+      border: 0;
+      border-radius: 12px;
+      padding: .9rem 1.5rem;
+      color: #fff;
+      font-size: .9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+      box-shadow: 0 10px 28px var(--btn-shadow);
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-save:hover { opacity: .88; }
+  </style>
+</head>
+<body>
+
+  {% set active_page = 'prizes' %}
+  {% set show_counter = true %}
+  {% include '_navbar.html' %}
+
+  <div class="container-lg py-4 py-md-5">
+
+    <div class="mb-4">
+      <p class="page-subtitle mb-1">App Settings</p>
+      <h1 class="page-title mb-1">Prizes</h1>
+      <p class="page-subtitle">Configure the success text and two prizes per suit deck — title, image, and description.</p>
+    </div>
+
+    <div class="section-line"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-msg mb-4 d-flex align-items-center gap-2">✅ {{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/modify-prizes" enctype="multipart/form-data">
+
+      {% for suit_key, suit_meta in suits.items() %}
+      <div class="suit-section" data-suit="{{ suit_key }}">
+
+        <!-- ── Suit header ── -->
+        <div class="suit-section-header">
+          <div class="suit-icon">{{ suit_meta.symbol }}</div>
+          <h2 class="suit-title">{{ suit_meta.label }}</h2>
+        </div>
+
+        <!-- ── Success text shown when this suit's prize page is unlocked ── -->
+        <div class="mb-4">
+          <label class="field-label" for="pm_{{ suit_key }}">
+            Prize page success text
+          </label>
+          <textarea
+            id="pm_{{ suit_key }}"
+            name="prize_message_{{ suit_key }}"
+            class="form-control"
+            rows="2"
+            placeholder="Message shown when the {{ suit_meta.label }} prize page is unlocked…">{{ config.prize_messages[suit_key] }}</textarea>
+        </div>
+
+        <!-- ── Two prize cards ── -->
+        <div class="row g-3">
+          {% for i in [1, 2] %}
+          {% set prize = prizes[suit_key][i - 1] %}
+          <div class="col-md-6">
+            <div class="prize-card">
+
+              <div class="prize-badge">{{ suit_meta.symbol }} Prize {{ i }}</div>
+
+              <!-- Title -->
+              <div class="mb-3">
+                <label class="field-label" for="p_{{ suit_key }}_{{ i }}_title">Prize Title</label>
+                <input
+                  id="p_{{ suit_key }}_{{ i }}_title"
+                  name="p_{{ suit_key }}_{{ i }}_title"
+                  class="form-control"
+                  type="text"
+                  placeholder="{{ suit_meta.label }} Prize {{ i }} (auto-generated if left blank)"
+                  value="{{ prize.title }}" />
+              </div>
+
+              <!-- Image upload -->
+              <div class="img-upload-wrap">
+                <label class="field-label">Prize Image</label>
+
+                <div class="img-preview-box" id="box_{{ suit_key }}_{{ i }}">
+                  {% if prize.image %}
+                  <img
+                    id="prev_{{ suit_key }}_{{ i }}"
+                    src="{{ url_for('static', filename='prize_images/' + prize.image) }}"
+                    alt="Prize image" />
+                  {% else %}
+                  <div class="img-placeholder-inner" id="ph_{{ suit_key }}_{{ i }}">
+                    <span class="ph-icon">🖼️</span>
+                    <span class="ph-text">Symbol placeholder used</span>
+                  </div>
+                  <img id="prev_{{ suit_key }}_{{ i }}" src="" alt="" style="display:none" />
+                  {% endif %}
+                </div>
+
+                <div class="upload-row">
+                  <label class="upload-btn">
+                    📷 {{ 'Replace' if prize.image else 'Upload' }} image
+                    <input
+                      type="file"
+                      name="p_{{ suit_key }}_{{ i }}_image"
+                      accept="image/*"
+                      onchange="handleImagePick(this,'{{ suit_key }}','{{ i }}')" />
+                  </label>
+
+                  {% if prize.image %}
+                  <label class="clear-img-label">
+                    <input type="checkbox" name="p_{{ suit_key }}_{{ i }}_clear_image" value="1"
+                           onchange="toggleClearPreview(this,'{{ suit_key }}','{{ i }}')" />
+                    Remove image
+                  </label>
+                  {% endif %}
+                </div>
+                <div class="filename-hint" id="hint_{{ suit_key }}_{{ i }}">
+                  {% if prize.image %}{{ prize.image }}{% else %}No upload yet. The prize page will use the {{ suit_meta.symbol }} symbol as a placeholder.{% endif %}
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div>
+                <label class="field-label" for="p_{{ suit_key }}_{{ i }}_desc">Description</label>
+                <textarea
+                  id="p_{{ suit_key }}_{{ i }}_desc"
+                  name="p_{{ suit_key }}_{{ i }}_desc"
+                  class="form-control"
+                  placeholder="Describe the prize in detail — what it is, how to claim it, any conditions…"
+                  rows="6">{{ prize.description }}</textarea>
+              </div>
+
+            </div>
+          </div>
+          {% endfor %}
+        </div><!-- /row -->
+
+      </div><!-- /suit-section -->
+      {% endfor %}
+
+      <button type="submit" class="btn-save">💾&nbsp; Save All Prizes</button>
+
+    </form>
+  </div><!-- /container -->
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    /* Show a local preview when the user picks a file. */
+    function handleImagePick(input, suit, idx) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const prev = document.getElementById('prev_' + suit + '_' + idx);
+        const ph   = document.getElementById('ph_'   + suit + '_' + idx);
+        if (prev) { prev.src = e.target.result; prev.style.display = ''; }
+        if (ph)   { ph.style.display = 'none'; }
+        const hint = document.getElementById('hint_' + suit + '_' + idx);
+        if (hint)  hint.textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* Dim preview when "Remove image" checkbox is ticked. */
+    function toggleClearPreview(cb, suit, idx) {
+      const prev = document.getElementById('prev_' + suit + '_' + idx);
+      if (prev) prev.style.opacity = cb.checked ? '.25' : '1';
+    }
+  </script>
+</body>
+</html>

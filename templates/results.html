@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Results — {{ app_title }}</title>
+
+  <!-- Apply saved theme before CSS renders -->
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       THEME TOKENS
+    ══════════════════════════════════════════════════════════════ */
+    :root, [data-theme="dark"] {
+      --bg-base:        #05080f;
+      --bg-surface:     #0c1220;
+      --border-subtle:  rgba(255,255,255,.07);
+      --border-accent:  rgba(59,130,246,.35);
+      --accent:         #3b82f6;
+      --accent-bright:  #60a5fa;
+      --accent-dim:     #1d4ed8;
+      --accent-glow:    rgba(59,130,246,.18);
+      --text-primary:   #f1f5f9;
+      --text-muted:     #64748b;
+      --text-soft:      #94a3b8;
+      --body-grad1:     rgba(29,78,216,.2);
+
+      --nav-bg:          rgba(5,8,15,.88);
+      --nav-shadow:      rgba(59,130,246,.08);
+      --nav-brand:       #f1f5f9;
+      --nav-brand-hvr:   #60a5fa;
+      --nav-link:        #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+
+      --dd-bg:      #0d1627;
+      --dd-hdr:     #64748b;
+      --dd-item:    #94a3b8;
+      --dd-hvr-bg:  rgba(59,130,246,.12);
+      --dd-hvr-cl:  #60a5fa;
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+      --dd-shadow:  rgba(0,0,0,.6);
+
+      --tbl-bg:        rgba(13,22,39,.6);
+      --tbl-border:    rgba(59,130,246,.2);
+      --tbl-head-bg:   rgba(13,22,39,.9);
+      --tbl-head-cl:   #64748b;
+      --tbl-row-hvr:   rgba(59,130,246,.06);
+      --tbl-divider:   rgba(59,130,246,.15);
+
+      --badge-bg:  rgba(59,130,246,.15);
+      --badge-bdr: rgba(59,130,246,.35);
+      --badge-cl:  #60a5fa;
+
+      --pre-bg:    rgba(0,0,0,.45);
+      --pre-bdr:   rgba(59,130,246,.25);
+      --pre-cl:    #94a3b8;
+
+      --empty-cl:  #334155;
+
+      --row-hl-bg:  rgba(59,130,246,.1);
+      --row-hl-clr: rgba(99,163,250,.55);
+    }
+
+    [data-theme="light"] {
+      --bg-base:        #f4f0e6;
+      --bg-surface:     #fffcf5;
+      --border-subtle:  rgba(0,0,0,.07);
+      --border-accent:  rgba(180,140,60,.42);
+      --accent:         #b8860b;
+      --accent-bright:  #d4a017;
+      --accent-dim:     #8b6914;
+      --accent-glow:    rgba(180,140,60,.15);
+      --text-primary:   #1c1810;
+      --text-muted:     #78716c;
+      --text-soft:      #57534e;
+      --body-grad1:     rgba(180,140,60,.15);
+
+      --nav-bg:          rgba(253,250,242,.92);
+      --nav-shadow:      rgba(180,140,60,.1);
+      --nav-brand:       #1c1810;
+      --nav-brand-hvr:   #b8860b;
+      --nav-link:        #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+
+      --dd-bg:      #fffcf0;
+      --dd-hdr:     #9ca3af;
+      --dd-item:    #57534e;
+      --dd-hvr-bg:  rgba(180,140,60,.1);
+      --dd-hvr-cl:  #b8860b;
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+      --dd-shadow:  rgba(0,0,0,.18);
+
+      --tbl-bg:        rgba(255,252,245,.75);
+      --tbl-border:    rgba(180,140,60,.25);
+      --tbl-head-bg:   rgba(255,252,245,.95);
+      --tbl-head-cl:   #9ca3af;
+      --tbl-row-hvr:   rgba(180,140,60,.05);
+      --tbl-divider:   rgba(180,140,60,.18);
+
+      --badge-bg:  rgba(180,140,60,.12);
+      --badge-bdr: rgba(180,140,60,.42);
+      --badge-cl:  #8b6914;
+
+      --pre-bg:    rgba(255,255,255,.7);
+      --pre-bdr:   rgba(180,140,60,.3);
+      --pre-cl:    #57534e;
+
+      --empty-cl:  #c4b89a;
+
+      --row-hl-bg:  rgba(180,140,60,.09);
+      --row-hl-clr: rgba(180,140,60,.55);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE
+    ══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-grad1) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    /* Navbar styles → static/css/navbar.css */
+
+    /* ══════════════════════════════════════════════════════════════
+       PAGE HEADER
+    ══════════════════════════════════════════════════════════════ */
+    .page-title    { font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .875rem; color: var(--text-muted); }
+
+    .section-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+      margin: 0 auto;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       RESULTS TABLE
+    ══════════════════════════════════════════════════════════════ */
+    .results-wrap {
+      background: var(--tbl-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--tbl-border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .results-table thead th {
+      background: var(--tbl-head-bg);
+      color: var(--tbl-head-cl);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--tbl-border);
+      white-space: nowrap;
+    }
+
+    .results-table tbody tr {
+      border-bottom: 1px solid var(--tbl-divider);
+      transition: background .15s;
+    }
+    .results-table tbody tr:last-child { border-bottom: none; }
+    .results-table tbody tr:hover { background: var(--tbl-row-hvr); }
+
+    .results-table tbody td {
+      padding: 14px 20px;
+      vertical-align: top;
+      font-size: .875rem;
+      color: var(--text-soft);
+    }
+
+    /* ID badge */
+    .row-id {
+      font-size: .75rem;
+      font-weight: 700;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-bdr);
+      color: var(--badge-cl);
+      padding: 2px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    /* Date column */
+    .col-date {
+      white-space: nowrap;
+      color: var(--text-muted);
+      font-size: .8rem;
+    }
+
+    /* User column */
+    .col-user {
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    /* Results column */
+    .col-results { width: 100%; min-width: 220px; }
+
+    /* Preview snippet — click to expand */
+    .json-preview {
+      font-size: .82rem;
+      color: var(--pre-cl);
+      background: var(--pre-bg);
+      border: 1px solid var(--pre-bdr);
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      user-select: none;
+      line-height: 1.6;
+      transition: border-color .15s, background .15s;
+      position: relative;
+    }
+    .json-preview::after {
+      content: '▼ expand';
+      display: block;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-top: 5px;
+      color: var(--accent-bright);
+      opacity: .7;
+    }
+    .json-preview:hover {
+      border-color: var(--border-accent);
+      background: var(--pre-bg);
+    }
+
+    /* Full breakdown (hidden by default) */
+    .json-full {
+      display: none;
+      font-size: .82rem;
+      color: var(--pre-cl);
+      background: var(--pre-bg);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      padding: 12px 14px;
+      line-height: 1.6;
+      cursor: pointer;
+      transition: border-color .15s;
+      position: relative;
+    }
+    .json-full::after {
+      content: '▲ collapse';
+      display: block;
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-top: 8px;
+      color: var(--accent-bright);
+      opacity: .7;
+    }
+    .json-full:hover { border-color: var(--accent); }
+
+    /* Suit colours */
+    .suit-h { color: #ef4444; }
+    .suit-d { color: #f87171; }
+    .suit-c { color: var(--text-soft); }
+    .suit-s { color: var(--accent-bright); }
+    .suit-j { color: #facc15; }
+
+    /* Score preview */
+    .score-preview-line  { display: flex; gap: .9rem; flex-wrap: wrap; margin-bottom: 2px; }
+    .score-chip          { display: inline-flex; align-items: center; gap: .25rem; font-weight: 700; font-size: .85rem; }
+    .score-preview-total { font-size: .72rem; color: var(--text-muted); }
+
+    /* Full breakdown */
+    .full-scores      { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin-bottom: .65rem; }
+    .full-suit-row    { display: inline-flex; align-items: center; gap: .3rem; }
+    .full-suit-sym    { font-size: .95rem; font-weight: 700; }
+    .full-suit-name   { font-size: .75rem; color: var(--text-muted); }
+    .full-suit-pts    { font-size: .82rem; font-weight: 700; color: var(--text-primary); }
+    .full-total       { font-size: .82rem; font-weight: 800; color: var(--text-primary);
+                        padding-top: .4rem; margin-top: .1rem;
+                        border-top: 1px solid var(--border-subtle); width: 100%; }
+    .full-cards-label { font-size: .65rem; font-weight: 700; letter-spacing: 1.2px;
+                        text-transform: uppercase; color: var(--text-muted);
+                        margin: .55rem 0 .35rem; }
+    .full-cards-list  { display: flex; flex-wrap: wrap; gap: .3rem; }
+    .card-chip        { display: inline-flex; flex-direction: column; align-items: flex-start;
+                        font-size: .72rem; font-weight: 600; padding: 3px 8px;
+                        border-radius: 6px; background: var(--badge-bg);
+                        border: 1px solid var(--badge-bdr); color: var(--badge-cl);
+                        cursor: pointer; transition: background .15s, border-color .15s; }
+    .card-chip:hover  { border-color: var(--border-accent); }
+    .card-chip-open   { background: var(--dd-active-bg); border-color: var(--border-accent); }
+    .chip-header      { display: inline-flex; align-items: center; gap: 3px; }
+    .chip-sym         { font-size: .8rem; }
+    .chip-task        { display: block; font-size: .7rem; font-weight: 400;
+                        color: var(--text-soft); font-style: italic; line-height: 1.35;
+                        margin-top: 3px; white-space: normal; max-width: 260px; }
+    .no-cards         { font-size: .78rem; color: var(--text-muted); font-style: italic; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--empty-cl);
+    }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state-msg  { font-size: .95rem; font-weight: 500; }
+
+    /* ══════════════════════════════════════════════════════════════
+       BEST RESULTS PODIUM
+    ══════════════════════════════════════════════════════════════ */
+    .podium-wrap {
+      background: var(--tbl-bg);
+      border: 1px solid var(--tbl-border);
+      border-radius: 20px;
+      padding: 1.75rem 1.5rem 1.25rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .podium-eyebrow {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .2rem;
+    }
+    .podium-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: -.3px;
+      color: var(--text-primary);
+      margin-bottom: 1.25rem;
+    }
+    .podium-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #podiumCanvas {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+    }
+    .podium-labels {
+      display: flex;
+      width: 100%;
+      max-width: 480px;
+      margin-top: .4rem;
+    }
+    .podium-label {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 0 4px;
+    }
+    .podium-pts {
+      font-size: .95rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .podium-name {
+      font-size: .9rem;
+      font-weight: 800;
+      color: var(--text-soft);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .podium-date {
+      font-size: .65rem;
+      color: var(--text-muted);
+    }
+    .podium-link {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color .15s;
+      margin-top: 2px;
+    }
+    .podium-link:hover { border-color: var(--accent-bright); }
+    .podium-empty { font-size: .8rem; color: var(--text-muted); font-style: italic; }
+    .podium-id    { color: var(--text-muted); opacity: .75; }
+
+    @keyframes row-flash {
+      0%, 100% { background: transparent;      box-shadow: none; }
+      20%, 70% { background: var(--row-hl-bg); box-shadow: inset 0 0 0 1px var(--row-hl-clr),
+                                                            0 0 18px var(--row-hl-clr); }
+    }
+    .highlight-row td { animation: row-flash 1.8s ease; }
+
+    /* Responsive: stack on very small screens */
+    @media (max-width: 575.98px) {
+      .results-table thead { display: none; }
+      .results-table tbody tr { display: block; padding: 14px 16px; }
+      .results-table tbody td {
+        display: block;
+        padding: 4px 0;
+        border: none;
+      }
+      .results-wrap { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  {% set active_page = 'results' %}
+  {% include '_navbar.html' %}
+
+  <!-- ── Main ── -->
+  <div class="container-lg py-4 py-md-5">
+
+    <div class="mb-4">
+      <p class="page-subtitle mb-1">Database</p>
+      <h1 class="page-title mb-1">Results</h1>
+      <p class="page-subtitle">Your saved game sessions, newest first.</p>
+    </div>
+
+    <div class="section-line mb-4"></div>
+
+    {% if entries %}
+    <!-- ── Best Results Podium ── -->
+    <div class="podium-wrap">
+      <p class="podium-eyebrow">Hall of Fame</p>
+      <h2 class="podium-title">Best Results</h2>
+      <div class="podium-stage">
+        <canvas id="podiumCanvas" width="960" height="520"></canvas>
+        <div class="podium-labels">
+          <div class="podium-label" id="pod-left"></div>
+          <div class="podium-label" id="pod-center"></div>
+          <div class="podium-label" id="pod-right"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-line mb-4"></div>
+    {% endif %}
+
+    <div class="results-wrap">
+      {% if entries %}
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Results</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entry in entries %}
+          <tr id="entry-{{ entry.id }}">
+            <td><span class="row-id">#{{ entry.id }}</span></td>
+            <td class="col-date">{{ entry.date }}</td>
+            <td class="col-results">
+              <script type="application/json" class="entry-data">{{ entry.data | tojson }}</script>
+              <div class="json-preview"
+                   onclick="toggleJson(this)">
+                <div class="score-preview-line">
+                  <span class="score-chip"><span class="suit-h">♥</span> {{ entry.scores.hearts }}</span>
+                  <span class="score-chip"><span class="suit-d">♦</span> {{ entry.scores.diamonds }}</span>
+                  <span class="score-chip"><span class="suit-c">♣</span> {{ entry.scores.clubs }}</span>
+                  <span class="score-chip"><span class="suit-s">♠</span> {{ entry.scores.spades }}</span>
+                  <span class="score-chip"><span class="suit-j">★</span> {{ entry.scores.joker }}</span>
+                </div>
+                <div class="score-preview-total">{{ entry.total }} pts total · {{ entry.completed_cards | length }} cards</div>
+              </div>
+              <div class="json-full"
+                   onclick="toggleJson(this)">
+                <div class="full-scores">
+                  <div class="full-suit-row"><span class="full-suit-sym suit-h">♥</span><span class="full-suit-name">Hearts</span><span class="full-suit-pts">{{ entry.scores.hearts }} pts</span></div>
+                  <div class="full-suit-row"><span class="full-suit-sym suit-d">♦</span><span class="full-suit-name">Diamonds</span><span class="full-suit-pts">{{ entry.scores.diamonds }} pts</span></div>
+                  <div class="full-suit-row"><span class="full-suit-sym suit-c">♣</span><span class="full-suit-name">Clubs</span><span class="full-suit-pts">{{ entry.scores.clubs }} pts</span></div>
+                  <div class="full-suit-row"><span class="full-suit-sym suit-s">♠</span><span class="full-suit-name">Spades</span><span class="full-suit-pts">{{ entry.scores.spades }} pts</span></div>
+                  <div class="full-suit-row"><span class="full-suit-sym suit-j">★</span><span class="full-suit-name">Joker</span><span class="full-suit-pts">{{ entry.scores.joker }} pts</span></div>
+                  <div class="full-total">Total: {{ entry.total }} pts</div>
+                </div>
+                <div class="full-cards-label">Completed cards ({{ entry.completed_cards | length }})</div>
+                <div class="full-cards-list">
+                  {% if entry.completed_cards %}
+                    {% for card in entry.completed_cards %}
+                    {% set suit_key = card.suit or '' %}
+                    {% set symbol = track_meta[suit_key].symbol if suit_key in track_meta else '' %}
+                    {% set suit_cls = 'suit-' + suit_key[0] if suit_key else '' %}
+                    <span class="card-chip" onclick="toggleChipTask(event)" data-task="{{ card.task or (cards[card.id].task if card.id in cards else '') }}">
+                      <span class="chip-header">{% if symbol %}<span class="chip-sym {{ suit_cls }}">{{ symbol }}</span>{% endif %}{{ card.name or card.id or '?' }}{% if card.points is not none %} · {{ card.points }}{% endif %}</span>
+                    </span>
+                    {% endfor %}
+                  {% else %}
+                    <span class="no-cards">no cards completed</span>
+                  {% endif %}
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <p class="empty-state-msg">No results yet. Save a session from the game to see it here.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    /* ── Shared HTML-escape helper ───────────────────────────────── */
+    function escHtml(s) {
+      return String(s).replace(/[&<>"]/g, c =>
+        ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+    }
+
+    /* ── Card deck — task lookup ─────────────────────────────────── */
+    const DECK = {{ cards | tojson }};
+
+    /* ── Best Results Podium ─────────────────────────────────────── */
+    (function initPodium() {
+      const tbody = document.querySelector('.results-table tbody');
+      if (!tbody) return;
+
+      function totalScore(raw) {
+        const scores = raw && typeof raw === 'object' ? raw.scores : null;
+        if (!scores || typeof scores !== 'object') return 0;
+        return ['hearts', 'diamonds', 'clubs', 'spades', 'joker']
+          .reduce((sum, suit) => sum + (Number(scores[suit]) || 0), 0);
+      }
+
+      /* Build entry list from existing DOM rows */
+        const entries = Array.from(tbody.querySelectorAll('tr')).map(tr => {
+        let raw = {};
+        const el = tr.querySelector('.entry-data');
+        if (el) try { raw = JSON.parse(el.textContent); } catch(e) {}
+        return {
+          id:   tr.id.replace('entry-', ''),
+          user: (tr.querySelector('.col-user')  || {}).textContent?.trim() || '—',
+          date: (tr.querySelector('.col-date')  || {}).textContent?.trim() || '—',
+          pts:  totalScore(raw)
+        };
+      }).sort((a, b) => b.pts - a.pts);
+
+      /* Podium order: left=2nd, center=1st, right=3rd */
+      const order = [entries[1], entries[0], entries[2]];
+
+      /* Populate text labels */
+      ['pod-left', 'pod-center', 'pod-right'].forEach((pid, i) => {
+        const el = document.getElementById(pid);
+        const e  = order[i];
+        if (!el) return;
+        if (!e) { el.innerHTML = '<span class="podium-empty">—</span>'; return; }
+        el.innerHTML =
+          `<span class="podium-pts">${e.pts} pts</span>` +
+          `<span class="podium-name">${escHtml(e.user)}</span>` +
+          `<span class="podium-date">${escHtml(e.date)} · <span class="podium-id">#${escHtml(e.id)}</span></span>` +
+          `<a class="podium-link" href="#entry-${e.id}"` +
+          ` onclick="return podiumScroll('${e.id}')">↓ results</a>`;
+      });
+
+      /* ── Canvas drawing ── */
+      const canvas = document.getElementById('podiumCanvas');
+      if (!canvas) return;
+
+      /* Bar definitions: [left/2nd red, center/1st gold, right/3rd blue] */
+      const BARS = [
+        { x:20,  w:120, h:90,  c1:'#ef4444', c2:'#991b1b', glow:'#ef4444', stClr:'#fca5a5', stSz:18, n:'2' },
+        { x:180, w:120, h:170, c1:'#f59e0b', c2:'#b45309', glow:'#f59e0b', stClr:'#fde68a', stSz:30, n:'1' },
+        { x:340, w:120, h:120, c1:'#3b82f6', c2:'#1d4ed8', glow:'#3b82f6', stClr:'#93c5fd', stSz:22, n:'3' }
+      ];
+      const W = 480, H = 260, BOT = 232;
+
+      function draw() {
+        const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, W * 2, H * 2);
+        ctx.save();
+        ctx.scale(2, 2); /* retina */
+
+        /* Stage floor glow */
+        const fg = ctx.createLinearGradient(0, BOT, 0, H);
+        fg.addColorStop(0, isDark ? 'rgba(59,130,246,0.18)' : 'rgba(180,140,60,0.14)');
+        fg.addColorStop(1, 'transparent');
+        ctx.fillStyle = fg;
+        ctx.fillRect(0, BOT, W, H - BOT);
+
+        BARS.forEach(b => {
+          const top = BOT - b.h;
+          const cx  = b.x + b.w / 2;
+
+          /* Bar with gradient + glow */
+          const g = ctx.createLinearGradient(b.x, top, b.x + b.w, top);
+          g.addColorStop(0, b.c1);
+          g.addColorStop(1, b.c2);
+          ctx.save();
+          ctx.shadowColor = b.glow;
+          ctx.shadowBlur  = 20;
+          rRect(ctx, b.x, top, b.w, b.h, 9);
+          ctx.fillStyle = g;
+          ctx.fill();
+          ctx.restore();
+
+          /* Inner shine */
+          const sh = ctx.createLinearGradient(b.x, top, b.x, top + 55);
+          sh.addColorStop(0, 'rgba(255,255,255,0.22)');
+          sh.addColorStop(1, 'rgba(255,255,255,0)');
+          rRect(ctx, b.x, top, b.w, b.h, 9);
+          ctx.fillStyle = sh;
+          ctx.fill();
+
+          /* Position number */
+          ctx.fillStyle    = 'rgba(255,255,255,0.88)';
+          ctx.font         = 'bold 26px Inter,system-ui,sans-serif';
+          ctx.textAlign    = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.n, cx, top + b.h * 0.52);
+
+          /* Star above bar */
+          ctx.save();
+          ctx.shadowColor  = b.glow;
+          ctx.shadowBlur   = 14;
+          ctx.fillStyle    = b.stClr;
+          ctx.font         = b.stSz + 'px serif';
+          ctx.textAlign    = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText('★', cx, top - 5);
+          ctx.restore();
+        });
+
+        ctx.restore();
+      }
+
+      function rRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.arcTo(x + w, y,     x + w, y + r, r);
+        ctx.lineTo(x + w, y + h);
+        ctx.lineTo(x,     y + h);
+        ctx.lineTo(x,     y + r);
+        ctx.arcTo(x,     y,     x + r, y,     r);
+        ctx.closePath();
+      }
+
+      draw();
+      new MutationObserver(draw).observe(
+        document.documentElement,
+        { attributes: true, attributeFilter: ['data-theme'] }
+      );
+    })();
+
+    function toggleChipTask(e) {
+      e.stopPropagation();
+      const chip = e.currentTarget;
+      const existing = chip.querySelector('.chip-task');
+      if (existing) {
+        existing.remove();
+        chip.classList.remove('card-chip-open');
+      } else {
+        const text = chip.getAttribute('data-task');
+        if (!text) return;
+        const el = document.createElement('span');
+        el.className = 'chip-task';
+        el.textContent = text;
+        chip.appendChild(el);
+        chip.classList.add('card-chip-open');
+      }
+    }
+
+    function podiumScroll(id) {
+      const row = document.getElementById('entry-' + id);
+      if (!row) return false;
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      row.classList.remove('highlight-row');
+      void row.offsetWidth; /* reflow to restart animation */
+      row.classList.add('highlight-row');
+      return false;
+    }
+
+    /* ── JSON expand/collapse ─────────────────────────────────── */
+    function toggleJson(el) {
+      var row = el.closest('td');
+      var preview = row.querySelector('.json-preview');
+      var full    = row.querySelector('.json-full');
+      if (el.classList.contains('json-preview')) {
+        preview.style.display = 'none';
+        full.style.display    = 'block';
+      } else {
+        full.style.display    = 'none';
+        preview.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

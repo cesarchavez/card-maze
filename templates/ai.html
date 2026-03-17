@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Settings — {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    /* ── Theme tokens ───────────────────────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg-base:        #05080f;
+      --bg-surface:     #0c1220;
+      --border-subtle:  rgba(255,255,255,.07);
+      --border-accent:  rgba(59,130,246,.35);
+      --accent:         #3b82f6;
+      --accent-bright:  #60a5fa;
+      --accent-dim:     #1d4ed8;
+      --text-primary:   #f1f5f9;
+      --text-muted:     #64748b;
+      --text-soft:      #94a3b8;
+      --body-grad1:     rgba(29,78,216,.2);
+
+      --nav-bg:          rgba(5,8,15,.88);
+      --nav-shadow:      rgba(59,130,246,.08);
+      --nav-brand:       #f1f5f9;
+      --nav-brand-hvr:   #60a5fa;
+      --nav-link:        #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+      --dd-bg:           #0d1627;
+      --dd-hdr:          #64748b;
+      --dd-item:         #94a3b8;
+      --dd-hvr-bg:       rgba(59,130,246,.12);
+      --dd-hvr-cl:       #60a5fa;
+      --dd-active-bg:    rgba(59,130,246,.18);
+      --dd-active-cl:    #60a5fa;
+      --dd-shadow:       rgba(0,0,0,.6);
+      --ctr-bg:          rgba(59,130,246,.18);
+      --ctr-bdr:         rgba(59,130,246,.35);
+      --ctr-cl:          #60a5fa;
+      --divider:         rgba(59,130,246,.35);
+      --btn-save-from:   #1d4ed8;
+      --btn-save-to:     #3b82f6;
+      --btn-save-sh:     rgba(59,130,246,.35);
+      --pnl-bg:          rgba(13,22,39,.65);
+      --pnl-bdr:         rgba(59,130,246,.35);
+      --inp-bg:          rgba(0,0,0,.3);
+      --inp-bdr:         rgba(255,255,255,.07);
+      --inp-focus-bdr:   rgba(59,130,246,.45);
+      --inp-focus-sh:    rgba(59,130,246,.12);
+      --inp-focus-bg:    rgba(0,0,0,.45);
+      --flash-bg:        rgba(34,197,94,.12);
+      --flash-bdr:       rgba(34,197,94,.3);
+      --flash-cl:        #86efac;
+
+      /* Provider cards */
+      --card-bg:         rgba(13,22,39,.55);
+      --card-bdr:        rgba(59,130,246,.2);
+      --card-sel-bdr:    rgba(59,130,246,.7);
+      --card-sel-bg:     rgba(59,130,246,.1);
+      --card-sel-glow:   rgba(59,130,246,.12);
+
+      /* Status badges */
+      --ok-bg:    rgba(34,197,94,.12);
+      --ok-bdr:   rgba(34,197,94,.3);
+      --ok-cl:    #86efac;
+      --warn-bg:  rgba(245,158,11,.1);
+      --warn-bdr: rgba(245,158,11,.3);
+      --warn-cl:  #fbbf24;
+      --info-bg:  rgba(59,130,246,.1);
+      --info-bdr: rgba(59,130,246,.3);
+      --info-cl:  #60a5fa;
+    }
+
+    [data-theme="light"] {
+      --bg-base:        #f4f0e6;
+      --bg-surface:     #fffcf5;
+      --border-subtle:  rgba(0,0,0,.07);
+      --border-accent:  rgba(180,140,60,.42);
+      --accent:         #b8860b;
+      --accent-bright:  #d4a017;
+      --accent-dim:     #8b6914;
+      --text-primary:   #1c1810;
+      --text-muted:     #78716c;
+      --text-soft:      #57534e;
+      --body-grad1:     rgba(180,140,60,.18);
+
+      --nav-bg:          rgba(253,250,242,.92);
+      --nav-shadow:      rgba(180,140,60,.1);
+      --nav-brand:       #1c1810;
+      --nav-brand-hvr:   #b8860b;
+      --nav-link:        #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+      --dd-bg:           #fffcf0;
+      --dd-hdr:          #9ca3af;
+      --dd-item:         #57534e;
+      --dd-hvr-bg:       rgba(180,140,60,.1);
+      --dd-hvr-cl:       #b8860b;
+      --dd-active-bg:    rgba(180,140,60,.15);
+      --dd-active-cl:    #8b6914;
+      --dd-shadow:       rgba(0,0,0,.18);
+      --ctr-bg:          rgba(180,140,60,.12);
+      --ctr-bdr:         rgba(180,140,60,.42);
+      --ctr-cl:          #8b6914;
+      --divider:         rgba(180,140,60,.42);
+      --btn-save-from:   #8b6914;
+      --btn-save-to:     #c9a227;
+      --btn-save-sh:     rgba(180,140,60,.35);
+      --pnl-bg:          rgba(255,252,245,.88);
+      --pnl-bdr:         rgba(180,140,60,.42);
+      --inp-bg:          rgba(255,255,255,.8);
+      --inp-bdr:         rgba(0,0,0,.1);
+      --inp-focus-bdr:   rgba(180,140,60,.55);
+      --inp-focus-sh:    rgba(180,140,60,.12);
+      --inp-focus-bg:    rgba(255,255,255,.95);
+      --flash-bg:        rgba(34,197,94,.1);
+      --flash-bdr:       rgba(34,197,94,.3);
+      --flash-cl:        #15803d;
+
+      --card-bg:         rgba(255,252,245,.8);
+      --card-bdr:        rgba(180,140,60,.25);
+      --card-sel-bdr:    rgba(180,140,60,.8);
+      --card-sel-bg:     rgba(180,140,60,.07);
+      --card-sel-glow:   rgba(180,140,60,.1);
+
+      --ok-bg:    rgba(34,197,94,.1);
+      --ok-bdr:   rgba(34,197,94,.3);
+      --ok-cl:    #15803d;
+      --warn-bg:  rgba(180,100,0,.08);
+      --warn-bdr: rgba(180,100,0,.25);
+      --warn-cl:  #92400e;
+      --info-bg:  rgba(180,140,60,.1);
+      --info-bdr: rgba(180,140,60,.3);
+      --info-cl:  #8b6914;
+    }
+
+    /* ── Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      background: var(--bg-base);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-grad1) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    /* ── Page header ─────────────────────────────────────────────── */
+    .page-title    { font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .875rem; color: var(--text-muted); }
+    .section-line  {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--divider), transparent);
+      margin: 0 auto;
+    }
+
+    /* ── Flash ───────────────────────────────────────────────────── */
+    .alert-success-app {
+      background: var(--flash-bg);
+      border: 1px solid var(--flash-bdr);
+      color: var(--flash-cl);
+      border-radius: 12px;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 12px 18px;
+    }
+
+    /* ── Save button ─────────────────────────────────────────────── */
+    .btn-save {
+      background: linear-gradient(135deg, var(--btn-save-from), var(--btn-save-to));
+      color: #fff;
+      font-weight: 700;
+      font-size: .9rem;
+      padding: 10px 28px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px var(--btn-save-sh);
+      cursor: pointer;
+      transition: opacity .15s, transform .12s;
+      letter-spacing: .3px;
+    }
+    .btn-save:hover  { opacity: .9; transform: translateY(-1px); color: #fff; }
+    .btn-save:active { transform: scale(.97); }
+
+    /* ── Field label ─────────────────────────────────────────────── */
+    .field-label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .4rem;
+    }
+
+    /* ── Text inputs ─────────────────────────────────────────────── */
+    .form-control {
+      background:    var(--inp-bg) !important;
+      border:        1px solid var(--inp-bdr) !important;
+      border-radius: 8px !important;
+      color:         var(--text-primary) !important;
+      font-size:     .88rem !important;
+      padding:       8px 12px !important;
+      transition:    border-color .15s !important;
+      font-family:   inherit !important;
+    }
+    .form-control::placeholder { color: var(--text-muted); opacity: .6; }
+    .form-control:focus {
+      border-color: var(--inp-focus-bdr) !important;
+      box-shadow:   0 0 0 3px var(--inp-focus-sh) !important;
+      background:   var(--inp-focus-bg) !important;
+      outline:      none !important;
+    }
+
+    /* ── Status badges ───────────────────────────────────────────── */
+    .badge-status {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           5px;
+      font-size:     .72rem;
+      font-weight:   700;
+      letter-spacing:.5px;
+      padding:       3px 10px;
+      border-radius: 99px;
+    }
+    .badge-ok   { background: var(--ok-bg);   border: 1px solid var(--ok-bdr);   color: var(--ok-cl);   }
+    .badge-warn { background: var(--warn-bg);  border: 1px solid var(--warn-bdr);  color: var(--warn-cl);  }
+    .badge-info { background: var(--info-bg);  border: 1px solid var(--info-bdr);  color: var(--info-cl);  }
+
+    /* ── Provider cards ──────────────────────────────────────────── */
+    .provider-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 575.98px) {
+      .provider-grid { grid-template-columns: 1fr; }
+    }
+
+    .provider-card {
+      position:      relative;
+      background:    var(--card-bg);
+      border:        2px solid var(--card-bdr);
+      border-radius: 14px;
+      padding:       1.25rem 1.25rem 1rem;
+      cursor:        pointer;
+      transition:    border-color .2s, background .2s, box-shadow .2s;
+      display:       flex;
+      flex-direction:column;
+      gap:           .6rem;
+    }
+    .provider-card:hover { border-color: var(--card-sel-bdr); }
+
+    /* Selected state via hidden radio */
+    .provider-radio { display: none; }
+    .provider-radio:checked ~ .provider-card-inner { /* handled by JS class */ }
+    .provider-card.is-selected {
+      border-color: var(--card-sel-bdr);
+      background:   var(--card-sel-bg);
+      box-shadow:   0 0 0 4px var(--card-sel-glow);
+    }
+
+    .provider-icon   { font-size: 2rem; line-height: 1; }
+    .provider-name   { font-size: 1.1rem; font-weight: 800; letter-spacing: -.3px; }
+    .provider-desc   { font-size: .78rem; color: var(--text-muted); line-height: 1.5; flex: 1; }
+    .provider-select-dot {
+      position:      absolute;
+      top:           14px;
+      right:         14px;
+      width:         18px;
+      height:        18px;
+      border-radius: 50%;
+      border:        2px solid var(--card-bdr);
+      background:    transparent;
+      transition:    all .2s;
+    }
+    .provider-card.is-selected .provider-select-dot {
+      background:   var(--accent);
+      border-color: var(--accent);
+      box-shadow:   0 0 0 3px var(--card-sel-glow);
+    }
+    .provider-card.is-selected .provider-select-dot::after {
+      content:  '';
+      display:  block;
+      width:    6px;
+      height:   6px;
+      background: #fff;
+      border-radius: 50%;
+      margin: 4px auto 0;
+    }
+
+    /* ── Ollama config panel (shown when Ollama selected) ────────── */
+    .ollama-config {
+      background:    var(--pnl-bg);
+      border:        1px solid var(--pnl-bdr);
+      border-radius: 14px;
+      padding:       1.25rem 1.5rem;
+    }
+
+    /* ── Context banner ──────────────────────────────────────────── */
+    .context-banner {
+      background:    var(--pnl-bg);
+      border:        1px solid var(--pnl-bdr);
+      border-radius: 12px;
+      padding:       14px 18px;
+      font-size:     .82rem;
+      color:         var(--text-soft);
+      display:       flex;
+      align-items:   center;
+      gap:           10px;
+      flex-wrap:     wrap;
+    }
+  </style>
+</head>
+<body>
+
+  {% set active_page        = 'ai' %}
+  {% set show_counter       = true %}
+  {% set show_reset         = false %}
+  {% set show_suit_badges   = false %}
+  {% set show_save_session  = false %}
+  {% include '_navbar.html' %}
+
+  <div class="container-lg py-4 py-md-5">
+
+    <!-- ── Page header ─────────────────────────────────────────── -->
+    <div class="mb-4">
+      <p class="page-subtitle mb-1">Configuration</p>
+      <h1 class="page-title mb-1">AI Settings</h1>
+      <p class="page-subtitle">
+        Choose which AI provider generates Joker card tasks.
+        The active provider is used every time a new deck is started with
+        <strong>AI active</strong> enabled on the Modify Deck page.
+      </p>
+    </div>
+
+    <div class="section-line mb-4"></div>
+
+    <!-- ── Flash messages ──────────────────────────────────────── -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert-success-app mb-4 d-flex align-items-center gap-2">
+            <span>✅</span> {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- ── Context: AI master switch status ────────────────────── -->
+    <div class="context-banner mb-4">
+      <span style="font-size:1.1rem;">★</span>
+      <div>
+        <strong>Joker AI master switch:</strong>
+        {% if config.joker_ai_enabled %}
+          <span class="badge-status badge-ok ms-1">● Enabled</span>
+          &mdash; new decks will use the provider selected below.
+        {% else %}
+          <span class="badge-status badge-warn ms-1">○ Disabled</span>
+          &mdash; custom tasks from the Modify Deck page are used instead.
+          <a href="/modify" style="color:var(--accent-bright);">Go to Modify Deck →</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ── Form ────────────────────────────────────────────────── -->
+    <form id="ai-form" method="POST" action="/ai">
+
+      <p class="mb-3" style="font-size:.82rem; color:var(--text-muted);">
+        Select the active provider. Settings are applied on the next new game start.
+      </p>
+
+      <!-- ── Provider cards ──────────────────────────────────── -->
+      <div class="provider-grid mb-4">
+
+        <!-- OpenAI -->
+        <div class="provider-card {% if config.joker_ai_provider == 'openai' %}is-selected{% endif %}"
+             id="card-openai"
+             onclick="selectProvider('openai')">
+          <div class="provider-select-dot"></div>
+          <input type="radio" name="joker_ai_provider" value="openai" class="provider-radio" id="radio-openai"
+                 {% if config.joker_ai_provider == 'openai' %}checked{% endif %}>
+          <div class="provider-icon">🔮</div>
+          <div class="provider-name">OpenAI</div>
+          <div class="provider-desc">
+            Cloud API — generates creative tabletop prompts tuned for a game context.
+            Requires a valid <code>OPENAI_API_KEY</code> environment variable.
+          </div>
+          <div>
+            {% if openai_configured %}
+            <span class="badge-status badge-ok">✓ API key set</span>
+            {% else %}
+            <span class="badge-status badge-warn">⚠ No API key</span>
+            {% endif %}
+            <span class="badge-status badge-info ms-1">Model: {{ config.get('OPENAI_MODEL', 'gpt-4.1-mini') if False else 'gpt-4.1-mini' }}</span>
+          </div>
+          <p style="font-size:.72rem; color:var(--text-muted); margin:0;">
+            The API key and model are set via the <code>OPENAI_API_KEY</code> and
+            <code>OPENAI_MODEL</code> environment variables.
+          </p>
+        </div>
+
+        <!-- Ollama -->
+        <div class="provider-card {% if config.joker_ai_provider == 'ollama' %}is-selected{% endif %}"
+             id="card-ollama"
+             onclick="selectProvider('ollama')">
+          <div class="provider-select-dot"></div>
+          <input type="radio" name="joker_ai_provider" value="ollama" class="provider-radio" id="radio-ollama"
+                 {% if config.joker_ai_provider == 'ollama' %}checked{% endif %}>
+          <div class="provider-icon">🦙</div>
+          <div class="provider-name">Ollama</div>
+          <div class="provider-desc">
+            Local inference — runs entirely on your machine. No API key needed.
+            Configure the host and model below.
+          </div>
+          <div>
+            {% if ollama_available %}
+            <span class="badge-status badge-ok">✓ Library installed</span>
+            {% else %}
+            <span class="badge-status badge-warn">⚠ ollama package missing</span>
+            {% endif %}
+          </div>
+        </div>
+
+      </div><!-- /provider-grid -->
+
+      <!-- ── Ollama config (visible when Ollama is selected) ── -->
+      <div class="ollama-config mb-4 {% if config.joker_ai_provider != 'ollama' %}d-none{% endif %}"
+           id="ollama-config">
+
+        <h2 style="font-size:.95rem; font-weight:700; letter-spacing:.4px; margin-bottom:1rem;">
+          🦙 Ollama configuration
+        </h2>
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="field-label" for="ollama_host">Ollama Host URL</label>
+            <input
+              type="url"
+              id="ollama_host"
+              name="ollama_host"
+              class="form-control"
+              placeholder="http://localhost:11434"
+              value="{{ config.ollama_host }}">
+            <p class="mt-1" style="font-size:.72rem; color:var(--text-muted);">
+              The base URL of your running Ollama server.
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <label class="field-label" for="ollama_model">Model name</label>
+            <input
+              type="text"
+              id="ollama_model"
+              name="ollama_model"
+              class="form-control"
+              placeholder="gemma3"
+              value="{{ config.ollama_model }}">
+            <p class="mt-1" style="font-size:.72rem; color:var(--text-muted);">
+              Any model pulled via <code>ollama pull &lt;name&gt;</code>.
+              The model must support JSON output mode.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Prompt preview -->
+        <details class="mt-3" style="font-size:.78rem; color:var(--text-muted);">
+          <summary style="cursor:pointer; font-weight:600; color:var(--text-soft);">
+            Show prompt template
+          </summary>
+          <pre style="margin-top:.6rem; background:var(--inp-bg); border:1px solid var(--inp-bdr);
+                      border-radius:8px; padding:10px 12px; white-space:pre-wrap; word-break:break-word;
+                      font-size:.72rem; color:var(--text-soft); line-height:1.6;">Create 4 micro tasks for personal improvement, make the answer short and direct,
+return them in json format with a "tasks" key containing an array of 4 strings.
+Avoid using the following 4 actions: &lt;current joker tasks inserted here&gt;</pre>
+          <p style="margin-top:.4rem;">
+            The <em>current</em> joker tasks are injected each time so the model
+            produces fresh, non-repeating tasks across deck resets.
+          </p>
+        </details>
+
+      </div><!-- /ollama-config -->
+
+      <!-- ── Save ─────────────────────────────────────────────── -->
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn-save">💾&nbsp; Save AI Settings</button>
+      </div>
+
+    </form>
+
+  </div><!-- /container -->
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    function selectProvider(provider) {
+      // Update radio inputs
+      document.getElementById('radio-openai').checked = (provider === 'openai');
+      document.getElementById('radio-ollama').checked = (provider === 'ollama');
+
+      // Toggle selected visual state on cards
+      document.getElementById('card-openai').classList.toggle('is-selected', provider === 'openai');
+      document.getElementById('card-ollama').classList.toggle('is-selected', provider === 'ollama');
+
+      // Show / hide Ollama config section
+      document.getElementById('ollama-config').classList.toggle('d-none', provider !== 'ollama');
+    }
+  </script>
+
+</body>
+</html>

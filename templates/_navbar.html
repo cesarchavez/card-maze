@@ -1,0 +1,157 @@
+{# ── Shared Bootstrap navbar ────────────────────────────────────────────────
+   Variables expected (set with {% set %} in the including template):
+     active_page       : 'index' | 'modify' | 'modify_app' | 'prizes' | 'results' | 'prize'
+     show_counter      : true | false   — show the 🃏 card counter pill
+     show_suit_badges  : true | false   — show the score badges (index only)
+     show_reset        : true | false   — show the ↺ Reset Deck item
+     show_save_session : true | false   — show the 💾 Save link
+     remaining         : integer        — cards left (used when show_counter)
+   app_title and scores are global Flask template variables.
+   ───────────────────────────────────────────────────────────────────────── #}
+
+<nav class="navbar navbar-expand-md navbar-app fixed-top px-3 px-md-4">
+
+  <a class="navbar-brand me-auto" href="/">
+    <span class="brand-icon">♠</span>
+    {# Title hidden on mobile — icon only, leaving full width for the score badges #}
+    <span class="d-none d-md-inline">{{ app_title }}</span>
+  </a>
+
+  {# ── Suit badges — always visible on mobile, centered between brand & toggler ── #}
+  {% if show_suit_badges %}
+  <div class="suit-scores-mobile d-flex d-md-none">
+    {% for track_key, meta in track_meta.items() %}
+    <a id="m-badge-{{ track_key }}" class="suit-badge" data-suit="{{ track_key }}" href="/prize/{{ track_key }}">
+      {{ meta.symbol }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <button class="navbar-toggler ms-2" type="button"
+          data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false"
+          aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+    <ul class="navbar-nav align-items-md-center gap-md-1 py-2 py-md-0">
+
+      {# Desktop suit badges removed — icons appear on mobile only via suit-scores-mobile #}
+
+      {# ── App dropdown ── #}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle{% if active_page in ['modify_app', 'prizes', 'results'] %} active{% endif %}"
+           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">🤖&nbsp; App
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          {% if active_page != 'index' %}
+          <li>
+            <a class="dropdown-item" href="/">← Game</a>
+          </li>
+          {% endif %}
+          <li>
+            <a class="dropdown-item{% if active_page == 'modify_app' %} item-active{% endif %}"
+               href="/modify-app">⚙️&nbsp; Modify App</a>
+          </li>
+          <li>
+            <a class="dropdown-item{% if active_page == 'prizes' %} item-active{% endif %}"
+               href="/modify-prizes">🎁&nbsp; Prizes</a>
+          </li>
+          <li>
+            <a class="dropdown-item{% if active_page == 'ai' %} item-active{% endif %}"
+               href="/ai">✨&nbsp; AI Settings</a>
+          </li>
+          {% if show_save_session %}
+          <li>
+            <a class="dropdown-item" href="#" onclick="saveSession(event)">💾&nbsp; Save Run Results</a>
+          </li>
+          {% endif %}
+          <li>
+            <a class="dropdown-item{% if active_page == 'results' %} item-active{% endif %}"
+               href="/results">📊&nbsp; Results</a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item{% if active_page == 'export_deck' %} item-active{% endif %}"
+               href="/export-deck">📤&nbsp; Export Deck</a>
+          </li>
+          <li>
+            <a class="dropdown-item{% if active_page == 'import_deck' %} item-active{% endif %}"
+               href="/import-deck">📥&nbsp; Import Deck</a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="/logout" class="d-inline w-100">
+              <button type="submit" class="dropdown-item item-danger">
+                🔓&nbsp; Sign out
+              </button>
+            </form>
+          </li>
+        </ul>
+      </li>
+
+      {# ── Theme dropdown ── #}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button"
+           data-bs-toggle="dropdown" aria-expanded="false">🌙&nbsp; Theme</a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" href="#" onclick="setTheme('dark', event)">
+              <span class="theme-check" id="theme-check-dark">✓</span>
+              🌙&nbsp; Dark
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" onclick="setTheme('light', event)">
+              <span class="theme-check" id="theme-check-light">✓</span>
+              ☀️&nbsp; Light
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      {# ── Deck dropdown ── #}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle{% if active_page == 'modify' %} active{% endif %}"
+           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          ✏️&nbsp; Deck
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item{% if active_page == 'modify' %} item-active{% endif %}"
+               href="/modify">✏️&nbsp; Modify Deck</a>
+          </li>
+          {% if show_reset %}
+          <li>
+            <a class="dropdown-item" href="#" onclick="seedRun(event)">
+              🎲&nbsp; Seed Run
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item item-danger" href="#"
+               onclick="fetch('/reset',{method:'POST'}).then(()=>window.location='/')">
+              ↺&nbsp; Reset Deck
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </li>
+
+      {# ── Card counter ── #}
+      {% if show_counter %}
+      <li class="nav-item ms-md-1">
+        {% if show_suit_badges %}
+        {# index.html: inner span updated by JS on card draw #}
+        <span id="nav-counter">🃏&nbsp;<span id="nav-count">{{ remaining }}</span> / {{ total_cards }} left</span>
+        {% else %}
+        <span id="nav-counter">🃏&nbsp;{{ remaining }} / {{ total_cards }} left</span>
+        {% endif %}
+      </li>
+      {% endif %}
+
+    </ul>
+  </div>
+
+</nav>

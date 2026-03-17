@@ -1,0 +1,27 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# ── Runtime data (persisted in /instance in Docker; local dev artifacts) ──────
+*.db
+appvalues.xml
+instance/
+
+# ── Uploaded prize images (user content, not source code) ─────────────────────
+static/prize_images/
+
+# ── Secrets ───────────────────────────────────────────────────────────────────
+.env
+.env.*
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp

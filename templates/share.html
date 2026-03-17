@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {% if entry %}
+  <title>{{ entry.username }}'s run · {{ entry.total }} pts</title>
+  <meta property="og:title"       content="{{ entry.username }}'s Deck of Tasks run — {{ entry.total }} pts">
+  <meta property="og:description" content="♥ {{ entry.scores.hearts }}  ♦ {{ entry.scores.diamonds }}  ♣ {{ entry.scores.clubs }}  ♠ {{ entry.scores.spades }}  ★ {{ entry.scores.joker }} — {{ entry.completed_cards | length }} cards completed{% if entry.seed %}  · Seed {{ entry.seed }}{% endif %}">
+  <meta property="og:type"        content="website">
+  <meta name="twitter:card"       content="summary">
+  {% else %}
+  <title>Result not found</title>
+  {% endif %}
+
+  <script>
+    (function () {
+      var t = localStorage.getItem('cardmaze-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <style>
+    :root, [data-theme="dark"] {
+      --bg:          #05080f;
+      --glow:        rgba(29,78,216,.22);
+      --panel-bg:    rgba(13,22,39,.85);
+      --panel-bdr:   rgba(59,130,246,.4);
+      --text:        #f1f5f9;
+      --muted:       #64748b;
+      --accent:      #3b82f6;
+      --accent-br:   #60a5fa;
+      --h-cl:  #f87171; --d-cl:  #fb923c;
+      --c-cl:  #4ade80; --s-cl:  #94a3b8; --j-cl: #facc15;
+      --btn-from: #1d4ed8; --btn-to: #3b82f6;
+      --btn-shadow: rgba(59,130,246,.35);
+      --card-bg:   rgba(255,255,255,.04);
+      --card-bdr:  rgba(255,255,255,.08);
+      --divider:   rgba(255,255,255,.07);
+    }
+    [data-theme="light"] {
+      --bg:          #f4f0e6;
+      --glow:        rgba(180,140,60,.2);
+      --panel-bg:    rgba(255,252,245,.95);
+      --panel-bdr:   rgba(180,140,11,.4);
+      --text:        #1c1810;
+      --muted:       #78716c;
+      --accent:      #b8860b;
+      --accent-br:   #d4a017;
+      --h-cl:  #dc2626; --d-cl:  #ea580c;
+      --c-cl:  #16a34a; --s-cl:  #475569; --j-cl: #ca8a04;
+      --btn-from: #8b6914; --btn-to: #b8860b;
+      --btn-shadow: rgba(180,140,11,.3);
+      --card-bg:   rgba(0,0,0,.03);
+      --card-bdr:  rgba(0,0,0,.08);
+      --divider:   rgba(0,0,0,.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, var(--glow) 0%, transparent 70%);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      padding: 2rem 1rem 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Panel ── */
+    .share-card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-bdr);
+      border-radius: 24px;
+      padding: 2rem 1.75rem;
+      backdrop-filter: blur(14px);
+    }
+
+    /* ── Header ── */
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--accent-br);
+      margin-bottom: .4rem;
+    }
+    .player-name {
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+    }
+    .run-meta {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: .4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+    .run-meta span { display: flex; align-items: center; gap: .3rem; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--divider);
+      margin: 1.4rem 0;
+    }
+
+    /* ── Score grid ── */
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: .6rem;
+      margin-bottom: 1.4rem;
+    }
+    .score-cell {
+      background: var(--card-bg);
+      border: 1px solid var(--card-bdr);
+      border-radius: 14px;
+      padding: .75rem .5rem;
+      text-align: center;
+    }
+    .score-sym  { font-size: 1.35rem; line-height: 1; }
+    .score-num  { font-size: 1.1rem; font-weight: 800; margin-top: .25rem; }
+    .score-lbl  { font-size: .6rem; font-weight: 700; letter-spacing: .8px;
+                  text-transform: uppercase; color: var(--muted); margin-top: .15rem; }
+    .sym-h { color: var(--h-cl); }
+    .sym-d { color: var(--d-cl); }
+    .sym-c { color: var(--c-cl); }
+    .sym-s { color: var(--s-cl); }
+    .sym-j { color: var(--j-cl); }
+
+    /* ── Total ── */
+    .total-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: .5rem;
+      margin-bottom: 1.4rem;
+    }
+    .total-num  { font-size: 2.8rem; font-weight: 900; letter-spacing: -.04em; }
+    .total-lbl  { font-size: .8rem; font-weight: 700; text-transform: uppercase;
+                  letter-spacing: 1px; color: var(--muted); }
+
+    /* ── Cards list ── */
+    .cards-section h3 {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .card-row {
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-bdr);
+      border-radius: 10px;
+      padding: .5rem .75rem;
+      font-size: .82rem;
+    }
+    .card-row-sym { font-size: 1rem; flex-shrink: 0; margin-top: .05rem; }
+    .card-row-body { flex: 1; min-width: 0; }
+    .card-row-name { font-weight: 700; }
+    .card-row-task { color: var(--muted); font-size: .75rem; margin-top: .1rem;
+                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-row-pts  { font-size: .72rem; font-weight: 700; color: var(--accent-br);
+                     flex-shrink: 0; margin-top: .15rem; }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+      margin-top: 1.6rem;
+    }
+    .btn-primary {
+      flex: 1;
+      min-width: 120px;
+      padding: .65rem 1rem;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--btn-shadow);
+      transition: opacity .15s, transform .1s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn-primary:hover  { opacity: .88; }
+    .btn-primary:active { transform: scale(.97); }
+    .btn-ghost {
+      flex: 1;
+      min-width: 120px;
+      padding: .65rem 1rem;
+      border: 1px solid var(--panel-bdr);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+      text-align: center;
+      text-decoration: none;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.06); }
+
+    /* ── Footer ── */
+    .share-footer {
+      margin-top: 1.5rem;
+      font-size: .72rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Copy toast ── */
+    #copy-toast {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      padding: .5rem 1.2rem;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 700;
+      z-index: 9999;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .actions, #copy-toast { display: none !important; }
+      .share-card { border: 1px solid #ccc; border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+{% if not entry %}
+  <div class="share-card" style="text-align:center;padding:3rem 2rem;">
+    <p style="font-size:2rem;margin-bottom:1rem;">🃏</p>
+    <h1 style="font-size:1.4rem;font-weight:800;margin-bottom:.5rem;">Result not found</h1>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;">This result may have been deleted or the link is incorrect.</p>
+    <a href="/" class="btn-primary" style="display:inline-block;max-width:200px;">← Back to game</a>
+  </div>
+{% else %}
+
+<div class="share-card">
+
+  <!-- Header -->
+  <p class="eyebrow">Deck of Tasks · Result #{{ entry.id }}</p>
+  <h1 class="player-name">{{ entry.username }}</h1>
+  <div class="run-meta">
+    <span>📅 {{ entry.date }}</span>
+    <span>🃏 {{ entry.completed_cards | length }} card{{ 's' if entry.completed_cards | length != 1 else '' }} completed</span>
+    {% if entry.seed %}<span>🎲 Seed: <strong>{{ entry.seed }}</strong></span>{% endif %}
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Total -->
+  <div class="total-row">
+    <span class="total-num">{{ entry.total }}</span>
+    <span class="total-lbl">total points</span>
+  </div>
+
+  <!-- Score grid -->
+  <div class="score-grid">
+    <div class="score-cell">
+      <div class="score-sym sym-h">♥</div>
+      <div class="score-num">{{ entry.scores.hearts }}</div>
+      <div class="score-lbl">Hearts</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-sym sym-d">♦</div>
+      <div class="score-num">{{ entry.scores.diamonds }}</div>
+      <div class="score-lbl">Diamonds</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-sym sym-c">♣</div>
+      <div class="score-num">{{ entry.scores.clubs }}</div>
+      <div class="score-lbl">Clubs</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-sym sym-s">♠</div>
+      <div class="score-num">{{ entry.scores.spades }}</div>
+      <div class="score-lbl">Spades</div>
+    </div>
+    <div class="score-cell">
+      <div class="score-sym sym-j">★</div>
+      <div class="score-num">{{ entry.scores.joker }}</div>
+      <div class="score-lbl">Joker</div>
+    </div>
+  </div>
+
+  {% if entry.completed_cards %}
+  <div class="divider"></div>
+
+  <!-- Completed cards -->
+  <div class="cards-section">
+    <h3>Completed cards</h3>
+    <div class="cards-list">
+      {% for card in entry.completed_cards %}
+      {% set suit = card.suit | default('') %}
+      {% set sym_class = {'hearts':'sym-h','diamonds':'sym-d','clubs':'sym-c','spades':'sym-s','joker':'sym-j'}.get(suit, '') %}
+      {% set sym = {'hearts':'♥','diamonds':'♦','clubs':'♣','spades':'♠','joker':'★'}.get(suit, '🃏') %}
+      <div class="card-row">
+        <span class="card-row-sym {{ sym_class }}">{{ sym }}</span>
+        <div class="card-row-body">
+          <div class="card-row-name">{{ card.name | default(card.id) }}</div>
+          {% if card.task %}<div class="card-row-task">{{ card.task }}</div>{% endif %}
+        </div>
+        <span class="card-row-pts">+{{ card.points }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn-primary" onclick="copyLink()">🔗 Copy link</button>
+    <button class="btn-ghost"   onclick="window.print()">🖨 Print</button>
+    <a href="/" class="btn-ghost">← Back to game</a>
+  </div>
+</div>
+
+{% endif %}
+
+<p class="share-footer">Deck of Tasks &mdash; generated {{ entry.date if entry else '' }}</p>
+
+<div id="copy-toast">Link copied!</div>
+
+<script src="/static/js/theme.js"></script>
+<script>
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const t = document.getElementById('copy-toast');
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2000);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Export Deck - {{ app_title }}</title>
+
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    :root, [data-theme="dark"] {
+      --bg-base: #05080f;
+      --border-accent: rgba(59,130,246,.35);
+      --border-subtle: rgba(255,255,255,.07);
+      --accent: #3b82f6;
+      --accent-bright: #60a5fa;
+      --text-primary: #f1f5f9;
+      --text-muted: #64748b;
+      --nav-bg: rgba(5,8,15,.88);
+      --nav-shadow: rgba(59,130,246,.08);
+      --nav-brand: #f1f5f9;
+      --nav-brand-hvr: #60a5fa;
+      --nav-link: #94a3b8;
+      --nav-link-hvr-bg: rgba(255,255,255,.06);
+      --dd-bg: #0d1627;
+      --dd-hdr: #64748b;
+      --dd-item: #94a3b8;
+      --dd-hvr-bg: rgba(59,130,246,.12);
+      --dd-hvr-cl: #60a5fa;
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+      --dd-shadow: rgba(0,0,0,.6);
+      --panel-bg: rgba(13,22,39,.65);
+      --panel-border: rgba(59,130,246,.35);
+      --btn-from: #1d4ed8;
+      --btn-to: #3b82f6;
+      --btn-shadow: rgba(59,130,246,.35);
+      --body-glow: rgba(29,78,216,.2);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f4f0e6;
+      --border-accent: rgba(180,140,60,.42);
+      --border-subtle: rgba(0,0,0,.07);
+      --accent: #b8860b;
+      --accent-bright: #d4a017;
+      --text-primary: #1c1810;
+      --text-muted: #78716c;
+      --nav-bg: rgba(253,250,242,.92);
+      --nav-shadow: rgba(180,140,60,.1);
+      --nav-brand: #1c1810;
+      --nav-brand-hvr: #b8860b;
+      --nav-link: #57534e;
+      --nav-link-hvr-bg: rgba(180,140,60,.08);
+      --dd-bg: #fffcf0;
+      --dd-hdr: #9ca3af;
+      --dd-item: #57534e;
+      --dd-hvr-bg: rgba(180,140,60,.1);
+      --dd-hvr-cl: #b8860b;
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+      --dd-shadow: rgba(0,0,0,.18);
+      --panel-bg: rgba(255,252,245,.88);
+      --panel-border: rgba(180,140,60,.42);
+      --btn-from: #8b6914;
+      --btn-to: #c9a227;
+      --btn-shadow: rgba(180,140,60,.35);
+      --body-glow: rgba(180,140,60,.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-glow) 0%, transparent 70%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    .page-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; letter-spacing: -.5px; }
+    .page-subtitle { font-size: .9rem; color: var(--text-muted); }
+    .section-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border-accent), transparent);
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      padding: 2rem;
+    }
+
+    .export-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .export-description {
+      font-size: .95rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .export-includes {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .export-includes li {
+      font-size: .88rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .export-includes li::before {
+      content: '✓';
+      color: var(--accent-bright);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .85rem 2rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+      color: #fff;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .15s;
+      box-shadow: 0 4px 20px var(--btn-shadow);
+    }
+    .btn-export:hover { opacity: .9; transform: translateY(-1px); color: #fff; }
+    .btn-export:active { transform: translateY(0); }
+  </style>
+</head>
+<body>
+  {% set active_page = 'export_deck' %}
+  {% set show_counter = false %}
+  {% set show_suit_badges = false %}
+  {% set show_reset = false %}
+  {% set show_save_session = false %}
+  {% include '_navbar.html' %}
+
+  <div class="container" style="max-width:640px; padding: 2.5rem 1rem 4rem;">
+
+    <div class="mb-4">
+      <h1 class="page-title">📤 Export Deck</h1>
+      <p class="page-subtitle">Download your deck configuration as an XML file</p>
+    </div>
+    <div class="section-line"></div>
+
+    <div class="settings-panel text-center">
+      <div class="export-icon">📦</div>
+      <p class="export-description">
+        Click the button below to download an XML file containing your current deck configuration.
+        You can use this file to back up your setup or share it with others.
+      </p>
+
+      <ul class="export-includes">
+        <li>All 52 card tasks and point values</li>
+        <li>Prize titles and descriptions for all suits</li>
+        <li>Today's shared seed</li>
+        <li>Joker tasks</li>
+      </ul>
+
+      <a href="/export-deck/download" class="btn-export">
+        📥 Download deck.xml
+      </a>
+
+      <p class="mt-3" style="font-size:.8rem; color: var(--text-muted);">
+        Note: prize images are not included in the export.
+      </p>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script>
+    // Theme toggle (shared logic)
+    function setTheme(t, e) {
+      e && e.preventDefault();
+      localStorage.setItem('cardmaze-theme', t);
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('theme-check-dark').style.visibility  = t === 'dark'  ? 'visible' : 'hidden';
+      document.getElementById('theme-check-light').style.visibility = t === 'light' ? 'visible' : 'hidden';
+    }
+    (function() {
+      const t = localStorage.getItem('cardmaze-theme') || 'dark';
+      document.getElementById('theme-check-dark').style.visibility  = t === 'dark'  ? 'visible' : 'hidden';
+      document.getElementById('theme-check-light').style.visibility = t === 'light' ? 'visible' : 'hidden';
+    })();
+  </script>
+</body>
+</html>

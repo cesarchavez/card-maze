@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ app_title }}</title>
+
+  <!-- Apply saved theme BEFORE CSS renders to prevent flash -->
+  <script>
+    document.documentElement.setAttribute('data-theme',
+      localStorage.getItem('cardmaze-theme') || 'dark');
+  </script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/inter/inter.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       THEME TOKENS
+       Dark  → black / blue / white / red
+       Light → gold  / silver / white / grey
+    ══════════════════════════════════════════════════════════════ */
+
+    /* ── Dark (default) ── */
+    :root, [data-theme="dark"] {
+      --bg-base:        #05080f;
+      --bg-surface:     #0c1220;
+      --bg-card:        #111827;
+      --border-subtle:  rgba(255,255,255,.07);
+      --border-accent:  rgba(59,130,246,.35);
+      --accent:         #3b82f6;
+      --accent-bright:  #60a5fa;
+      --accent-dim:     #1d4ed8;
+      --accent-glow:    rgba(59,130,246,.18);
+      --text-primary:   #f1f5f9;
+      --text-muted:     #64748b;
+      --text-soft:      #94a3b8;
+      --red-card:       #dc2626;
+      --black-card:     #111827;
+
+      --body-grad1:     rgba(29,78,216,.25);
+      --body-grad2:     rgba(59,130,246,.1);
+
+      --nav-bg:         rgba(5,8,15,.85);
+      --nav-shadow:     rgba(59,130,246,.08);
+      --nav-brand:      #f1f5f9;
+      --nav-brand-hvr:  #60a5fa;
+      --nav-link:       #94a3b8;
+      --nav-link-hvr-bg:rgba(255,255,255,.06);
+      --nav-toggler-stroke: rgba(148,163,184,.9);
+
+      --dd-bg:      #0d1627;
+      --dd-hdr:     #64748b;
+      --dd-item:    #94a3b8;
+      --dd-hvr-bg:  rgba(59,130,246,.12);
+      --dd-hvr-cl:  #60a5fa;
+      --dd-shadow:  rgba(0,0,0,.6);
+      --dd-active-bg: rgba(59,130,246,.18);
+      --dd-active-cl: #60a5fa;
+
+      --ctr-bg:  rgba(59,130,246,.18);
+      --ctr-bdr: rgba(59,130,246,.35);
+      --ctr-cl:  #60a5fa;
+      --ctr-empty-cl:  #f87171;
+      --ctr-empty-bdr: rgba(248,113,113,.35);
+      --ctr-empty-bg:  rgba(220,38,38,.1);
+
+      --dk-stk-bg:   #1d4ed8;
+      --dk-stk-bdr:  rgba(59,130,246,.4);
+      --dk-img-sh:   rgba(0,0,0,.6);
+      --dk-img-ring: rgba(59,130,246,.2);
+      --dk-hvr-sh:   rgba(59,130,246,.25);
+      --dk-lbl:      #60a5fa;
+      --dk-sub:      #64748b;
+      --dk-lock-bdr: rgba(248,113,113,.5);
+      --dk-lock-bg:  rgba(0,0,0,.7);
+
+      --pnl-bg:  rgba(13,22,39,.7);
+      --pnl-bdr: rgba(59,130,246,.35);
+      --pnl-sh:  rgba(0,0,0,.3);
+      --pnl-lbl: #3b82f6;
+
+      --pts-from: #1d4ed8;
+      --pts-to:   #3b82f6;
+      --pts-sh:   rgba(59,130,246,.35);
+
+      --cbtn-bdr:     rgba(59,130,246,.35);
+      --cbtn-bg:      rgba(59,130,246,.18);
+      --cbtn-cl:      #94a3b8;
+      --cbtn-hvr-bdr: #3b82f6;
+      --cbtn-hvr-cl:  #60a5fa;
+      --cbtn-hvr-bg:  rgba(59,130,246,.22);
+
+      --sb-muted-cl:  #64748b;
+      --sb-muted-bdr: rgba(100,116,139,.3);
+      --sb-muted-bg:  rgba(100,116,139,.08);
+      --badge-gold-ring: rgba(251,191,36,.55);
+      --badge-gold-glow: rgba(251,191,36,.4);
+      --badge-gold-inner: rgba(251,191,36,.14);
+
+      --hearts-cl:    #f87171;  --hearts-bdr:   rgba(248,113,113,.45); --hearts-bg:   rgba(248,113,113,.1);
+      --diamonds-cl:  #fbbf24;  --diamonds-bdr: rgba(251,191,36,.45);  --diamonds-bg: rgba(251,191,36,.1);
+      --clubs-cl:     #4ade80;  --clubs-bdr:    rgba(74,222,128,.45);  --clubs-bg:    rgba(74,222,128,.1);
+      --spades-cl:    #93c5fd;  --spades-bdr:   rgba(147,197,253,.45); --spades-bg:   rgba(147,197,253,.1);
+      --joker-cl:     #facc15;  --joker-bdr:    rgba(250,204,21,.48);  --joker-bg:    rgba(250,204,21,.12);
+
+      --tst-bg:   #0d1627;
+      --tst-bdr:  rgba(59,130,246,.35);
+      --tst-hdr:  #60a5fa;
+      --tst-body: #94a3b8;
+      --tst-close-filter: invert(1) opacity(.4);
+
+      --divider: rgba(59,130,246,.35);
+      --ph-bdr:  rgba(59,130,246,.25);
+    }
+
+    /* ── Light: gold / silver / white / grey ── */
+    [data-theme="light"] {
+      --bg-base:        #f4f0e6;
+      --bg-surface:     #fffcf5;
+      --bg-card:        #faf7f0;
+      --border-subtle:  rgba(0,0,0,.07);
+      --border-accent:  rgba(180,140,60,.42);
+      --accent:         #b8860b;
+      --accent-bright:  #d4a017;
+      --accent-dim:     #8b6914;
+      --accent-glow:    rgba(180,140,60,.15);
+      --text-primary:   #1c1810;
+      --text-muted:     #78716c;
+      --text-soft:      #57534e;
+      --red-card:       #dc2626;
+      --black-card:     #1c1810;
+
+      --body-grad1:     rgba(180,140,60,.2);
+      --body-grad2:     rgba(201,162,39,.12);
+
+      --nav-bg:         rgba(253,250,242,.92);
+      --nav-shadow:     rgba(180,140,60,.1);
+      --nav-brand:      #1c1810;
+      --nav-brand-hvr:  #b8860b;
+      --nav-link:       #57534e;
+      --nav-link-hvr-bg:rgba(180,140,60,.08);
+      --nav-toggler-stroke: rgba(87,83,78,.9);
+
+      --dd-bg:      #fffcf0;
+      --dd-hdr:     #9ca3af;
+      --dd-item:    #57534e;
+      --dd-hvr-bg:  rgba(180,140,60,.1);
+      --dd-hvr-cl:  #b8860b;
+      --dd-shadow:  rgba(0,0,0,.18);
+      --dd-active-bg: rgba(180,140,60,.15);
+      --dd-active-cl: #8b6914;
+
+      --ctr-bg:  rgba(180,140,60,.12);
+      --ctr-bdr: rgba(180,140,60,.42);
+      --ctr-cl:  #8b6914;
+      --ctr-empty-cl:  #dc2626;
+      --ctr-empty-bdr: rgba(220,38,38,.35);
+      --ctr-empty-bg:  rgba(220,38,38,.08);
+
+      --dk-stk-bg:   #c9a227;
+      --dk-stk-bdr:  rgba(180,140,60,.55);
+      --dk-img-sh:   rgba(0,0,0,.2);
+      --dk-img-ring: rgba(180,140,60,.35);
+      --dk-hvr-sh:   rgba(180,140,60,.4);
+      --dk-lbl:      #8b6914;
+      --dk-sub:      #78716c;
+      --dk-lock-bdr: rgba(220,38,38,.5);
+      --dk-lock-bg:  rgba(255,252,245,.92);
+
+      --pnl-bg:  rgba(255,252,245,.88);
+      --pnl-bdr: rgba(180,140,60,.42);
+      --pnl-sh:  rgba(0,0,0,.08);
+      --pnl-lbl: #b8860b;
+
+      --pts-from: #8b6914;
+      --pts-to:   #c9a227;
+      --pts-sh:   rgba(180,140,60,.35);
+
+      --cbtn-bdr:     rgba(180,140,60,.42);
+      --cbtn-bg:      rgba(180,140,60,.1);
+      --cbtn-cl:      #57534e;
+      --cbtn-hvr-bdr: #b8860b;
+      --cbtn-hvr-cl:  #8b6914;
+      --cbtn-hvr-bg:  rgba(180,140,60,.2);
+
+      --sb-muted-cl:  #9ca3af;
+      --sb-muted-bdr: rgba(156,163,175,.42);
+      --sb-muted-bg:  rgba(156,163,175,.1);
+      --badge-gold-ring: rgba(180,140,60,.58);
+      --badge-gold-glow: rgba(180,140,60,.32);
+      --badge-gold-inner: rgba(180,140,60,.16);
+
+      /* Active suit colors — richer/darker so they're legible on light bg */
+      --hearts-cl:    #dc2626;  --hearts-bdr:   rgba(220,38,38,.45);  --hearts-bg:   rgba(220,38,38,.1);
+      --diamonds-cl:  #b45309;  --diamonds-bdr: rgba(180,83,9,.45);   --diamonds-bg: rgba(180,83,9,.1);
+      --clubs-cl:     #15803d;  --clubs-bdr:    rgba(21,128,61,.45);  --clubs-bg:    rgba(21,128,61,.1);
+      --spades-cl:    #1d4ed8;  --spades-bdr:   rgba(29,78,216,.45);  --spades-bg:   rgba(29,78,216,.1);
+      --joker-cl:     #ca8a04;  --joker-bdr:    rgba(202,138,4,.44);  --joker-bg:    rgba(250,204,21,.12);
+
+      --tst-bg:   #fffcf0;
+      --tst-bdr:  rgba(180,140,60,.42);
+      --tst-hdr:  #b8860b;
+      --tst-body: #57534e;
+      --tst-close-filter: opacity(.35);
+
+      --divider: rgba(180,140,60,.42);
+      --ph-bdr:  rgba(180,140,60,.3);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       BASE
+    ══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      background: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-grad1) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, var(--body-grad2) 0%, transparent 60%);
+      min-height: 100vh;
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding-top: 64px;
+    }
+
+    body.joker-active {
+      background-image:
+        linear-gradient(rgba(5,8,15,.56), rgba(5,8,15,.56)),
+        url('{{ url_for('static', filename='images/jockerbackground.png') }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    [data-theme="light"] body.joker-active {
+      background-image:
+        linear-gradient(rgba(255,252,245,.52), rgba(255,252,245,.52)),
+        url('{{ url_for('static', filename='images/jockerbackground.png') }}');
+    }
+
+    /* Navbar styles → static/css/navbar.css */
+
+    /* ══════════════════════════════════════════════════════════════
+       SUIT SCORE BADGES
+    ══════════════════════════════════════════════════════════════ */
+    .suit-scores {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .suit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid var(--sb-muted-bdr);
+      background: var(--sb-muted-bg);
+      color: var(--sb-muted-cl);
+      text-decoration: none;
+      pointer-events: none;
+      cursor: default;
+      transition: background .3s, color .3s, border-color .3s, transform .2s;
+      white-space: nowrap;
+    }
+    .suit-badge.unlocked { pointer-events: auto; cursor: pointer; }
+    .suit-badge.unlocked:hover { transform: translateY(-1px); }
+    .suit-badge.gilded {
+      box-shadow:
+        0 0 0 1px var(--badge-gold-ring),
+        0 0 16px var(--badge-gold-glow),
+        inset 0 0 14px var(--badge-gold-inner);
+    }
+
+    .suit-badge[data-suit="hearts"].unlocked  { color: var(--hearts-cl);   border-color: var(--hearts-bdr);   background: var(--hearts-bg);   }
+    .suit-badge[data-suit="diamonds"].unlocked{ color: var(--diamonds-cl); border-color: var(--diamonds-bdr); background: var(--diamonds-bg); }
+    .suit-badge[data-suit="clubs"].unlocked   { color: var(--clubs-cl);    border-color: var(--clubs-bdr);    background: var(--clubs-bg);    }
+    .suit-badge[data-suit="spades"].unlocked  { color: var(--spades-cl);   border-color: var(--spades-bdr);   background: var(--spades-bg);   }
+    .suit-badge[data-suit="joker"].unlocked   { color: var(--joker-cl);    border-color: var(--joker-bdr);    background: var(--joker-bg);    }
+
+    @keyframes badge-bump {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.2); }
+    }
+    .suit-badge.bump { animation: badge-bump .35s ease; }
+
+    /* Mobile navbar badges: tight sizing — almost icon-only */
+    .suit-scores-mobile .suit-badge {
+      font-size: 1rem;
+      padding: 2px 5px;
+      min-width: 0;
+      width: auto;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    /* Mobile navbar badges: fully invisible until the prize threshold is reached */
+    .suit-scores-mobile .suit-badge:not(.unlocked) {
+      border-color: transparent;
+      background:   transparent;
+      color:        transparent;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       PAGE HEADING
+    ══════════════════════════════════════════════════════════════ */
+    .page-title {
+      font-size: clamp(1.6rem, 4vw, 2.25rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--text-primary);
+    }
+    .page-subtitle {
+      font-size: .875rem;
+      color: var(--text-muted);
+      letter-spacing: .5px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       DECK
+    ══════════════════════════════════════════════════════════════ */
+    #deck-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #deck {
+      width: 200px;
+      height: 280px;
+      cursor: pointer;
+      border-radius: 16px;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .2s;
+      user-select: none;
+      position: relative;
+    }
+    #deck::before, #deck::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: var(--dk-stk-bg);
+      border: 1px solid var(--dk-stk-bdr);
+    }
+    #deck::before { top: -6px;  left: -6px;  z-index: -1; opacity: .7; }
+    #deck::after  { top: -12px; left: -12px; z-index: -2; opacity: .4; }
+
+    #deck img {
+      width: 100%; height: 100%;
+      border-radius: 15px;
+      object-fit: cover;
+      display: block;
+      box-shadow: 0 8px 32px var(--dk-img-sh), 0 0 0 1px var(--dk-img-ring);
+    }
+
+    #deck:hover:not(.deck-empty) {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 20px 48px var(--dk-hvr-sh);
+    }
+    #deck:active:not(.deck-empty) { transform: scale(.97); }
+    #deck.deck-empty { cursor: not-allowed; opacity: .35; filter: grayscale(80%); }
+
+    #deck-label {
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--dk-lbl);
+    }
+    #deck-counter {
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--dk-sub);
+    }
+    #deck-counter.empty { color: var(--ctr-empty-cl); }
+
+    #deck.deck-locked { cursor: not-allowed; }
+    #deck.deck-locked img { opacity: .65; }
+    .deck-lock-badge {
+      display: none;
+      position: absolute;
+      bottom: 10px; right: 10px;
+      width: 30px; height: 30px;
+      background: var(--dk-lock-bg);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--dk-lock-bdr);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: .9rem;
+      z-index: 1;
+    }
+    #deck.deck-locked .deck-lock-badge { display: flex; }
+
+    /* ══════════════════════════════════════════════════════════════
+       PLAYING CARD FACE
+    ══════════════════════════════════════════════════════════════ */
+    .playing-card {
+      width: 200px;
+      height: 280px;
+      border-radius: 16px;
+      background: #ffffff;
+      position: relative;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.08);
+      animation: flipIn .45s cubic-bezier(.22,.68,0,1.2);
+      flex-shrink: 0;
+    }
+
+    @keyframes flipIn {
+      from { transform: perspective(700px) rotateY(-90deg) scale(.85); opacity: 0; }
+      to   { transform: perspective(700px) rotateY(0deg)   scale(1);   opacity: 1; }
+    }
+
+    .card-tl, .card-br {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+      font-weight: 900;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .card-tl { top: 13px; left: 14px; align-items: flex-start; }
+    .card-br { bottom: 13px; right: 14px; align-items: flex-end; transform: rotate(180deg); }
+    .card-tl .cv, .card-br .cv { font-size: 1.65rem; }
+    .card-tl .cs, .card-br .cs { font-size: 1.1rem; margin-top: -1px; }
+
+    .card-mid {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      line-height: 1;
+    }
+
+    .joker-card {
+      color: #111827;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(251,245,221,.98));
+    }
+
+    .joker-card .card-tl,
+    .joker-card .card-br {
+      color: var(--joker-cl);
+    }
+
+    .joker-art {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 160px;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 20px rgba(0,0,0,.2));
+    }
+
+    .red-card   { color: var(--red-card); }
+    .black-card { color: var(--black-card); }
+
+    /* ══════════════════════════════════════════════════════════════
+       PLACEHOLDER / EMPTY
+    ══════════════════════════════════════════════════════════════ */
+    #placeholder {
+      width: 200px; height: 280px;
+      border-radius: 16px;
+      border: 2px dashed var(--ph-bdr);
+      display: flex;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: .8rem; font-weight: 500;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #empty-msg {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .9rem;
+      padding: 16px;
+      animation: fadeUp .4s ease;
+    }
+    #empty-msg .empty-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: .6; }
+
+    /* ══════════════════════════════════════════════════════════════
+       CARD INFO PANEL
+    ══════════════════════════════════════════════════════════════ */
+    #card-info {
+      background: var(--pnl-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--pnl-bdr);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 8px 32px var(--pnl-sh), inset 0 1px 0 rgba(255,255,255,.06);
+      animation: fadeUp .4s ease;
+      flex: 1;
+      min-width: 220px;
+      max-width: 380px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-row { margin-bottom: 16px; }
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-label {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--pnl-lbl);
+      margin-bottom: 3px;
+    }
+    .info-value {
+      font-size: .95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+    .info-value.fw-bold { font-weight: 700; font-size: 1.05rem; }
+
+    .points-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--pts-from), var(--pts-to));
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 3px 16px;
+      border-radius: 99px;
+      box-shadow: 0 4px 14px var(--pts-sh);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       COMPLETED BUTTON
+    ══════════════════════════════════════════════════════════════ */
+    #complete-wrap { width: 200px; }
+
+    .btn-complete {
+      width: 100%;
+      padding: 11px 0;
+      border: 2px solid var(--cbtn-bdr);
+      border-radius: 12px;
+      background: var(--cbtn-bg);
+      color: var(--cbtn-cl);
+      font-family: inherit;
+      font-size: .875rem;
+      font-weight: 600;
+      letter-spacing: .3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color .2s, background .2s, color .2s, transform .12s;
+    }
+    .btn-complete:hover:not(:disabled) {
+      border-color: var(--cbtn-hvr-bdr);
+      color: var(--cbtn-hvr-cl);
+      background: var(--cbtn-hvr-bg);
+      transform: translateY(-1px);
+    }
+    .btn-complete:active:not(:disabled) { transform: scale(.97); }
+    .btn-complete.is-done {
+      border-color: rgba(34,197,94,.5);
+      background: rgba(34,197,94,.1);
+      color: #16a34a;
+      cursor: default;
+    }
+    [data-theme="dark"] .btn-complete.is-done { color: #86efac; }
+
+    @keyframes btn-pulse {
+      0%,100% { transform: scale(1);    box-shadow: none; }
+      50%      { transform: scale(1.03); box-shadow: 0 0 0 6px var(--cbtn-bg); }
+    }
+    .btn-complete.pulse { animation: btn-pulse .5s ease 2; }
+
+    @keyframes btn-shake {
+      0%,100% { transform: translateX(0); }
+      20%,60% { transform: translateX(-5px); }
+      40%,80% { transform: translateX(5px); }
+    }
+    .btn-complete.shake { animation: btn-shake .35s ease; }
+
+    /* ══════════════════════════════════════════════════════════════
+       GAME LAYOUT
+    ══════════════════════════════════════════════════════════════ */
+    .game-layout {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2.5rem;
+    }
+    .deck-col { display: flex; justify-content: center; }
+
+    #card-col {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    #card-col.visible {
+      display: flex;
+      animation: slideIn .38s cubic-bezier(.22,.68,0,1.15);
+    }
+
+    /* Card display: row on desktop, column on mobile */
+    #card-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    @media (min-width: 576px) {
+      #card-display { flex-direction: row; align-items: flex-start; gap: 24px; }
+      #card-info { align-self: flex-start; }
+    }
+
+    #card-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @media (max-width: 575.98px) {
+      #card-col.visible { animation-name: fadeUp; }
+    }
+
+    .game-divider {
+      width: 1px;
+      min-height: 300px;
+      align-self: stretch;
+      background: linear-gradient(to bottom, transparent, var(--divider) 20%, var(--divider) 80%, transparent);
+    }
+    @media (max-width: 575.98px) { .game-divider { display: none !important; } }
+
+    /* ══════════════════════════════════════════════════════════════
+       TOAST
+    ══════════════════════════════════════════════════════════════ */
+    #toast-wrap {
+      position: fixed;
+      bottom: 1.5rem; right: 1.5rem;
+      z-index: 9999;
+    }
+    .toast-app {
+      background: var(--tst-bg);
+      border: 1px solid var(--tst-bdr);
+      border-radius: 12px;
+      color: var(--text-primary);
+      min-width: 230px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .toast-app .toast-header {
+      background: transparent;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--tst-hdr);
+      font-weight: 600;
+      font-size: .875rem;
+      border-radius: 12px 12px 0 0;
+    }
+    .toast-app .toast-body { font-size: .875rem; color: var(--tst-body); }
+    .toast-app .btn-close { filter: var(--tst-close-filter); }
+
+    /* ══════════════════════════════════════════════════════════════
+       BOTTOM STATUS BAR
+    ══════════════════════════════════════════════════════════════ */
+    #bottom-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg-base);
+      border-top: 1px solid rgba(255,255,255,.05);
+      z-index: 900;
+      padding: .5rem 1rem .55rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+    }
+    #bottom-scores {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    /* Slightly larger badges in bottom bar */
+    #bottom-scores .suit-badge {
+      font-size: .8rem;
+      padding: 5px 12px;
+    }
+    #bottom-seed {
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .6px;
+      color: var(--text-muted);
+      user-select: all;
+      cursor: default;
+    }
+    .cookie-disclaimer-link {
+      color: var(--text-muted);
+      opacity: .6;
+      text-decoration: underline dotted;
+      font-size: .65rem;
+      transition: opacity .2s;
+    }
+    .cookie-disclaimer-link:hover { opacity: 1; color: #818cf8; }
+    .bottom-share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 1px solid rgba(99,102,241,.45);
+      background: rgba(99,102,241,.1);
+      color: #818cf8;
+      cursor: pointer;
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+    }
+    .bottom-share-btn:hover { background: rgba(99,102,241,.2); transform: translateY(-1px); }
+
+    /* ══════════════════════════════════════════════════════════════
+       MISC
+    ══════════════════════════════════════════════════════════════ */
+    .section-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--divider), transparent);
+      margin: 0 auto 2rem;
+      max-width: 480px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  {% set active_page = 'index' %}
+  {% set show_counter = false %}
+  {% set show_suit_badges = true %}
+  {% set show_reset = true %}
+  {% set show_save_session = true %}
+  {% include '_navbar.html' %}
+
+  <!-- ── Main ── -->
+  <div class="container py-4 py-md-5" style="padding-bottom:6rem!important">
+
+    <div class="text-center mb-4 mb-md-5">
+      <p class="page-subtitle mb-2">Card Game</p>
+      <h1 class="page-title mb-2">{{ app_title }}</h1>
+      <p class="page-subtitle">Click the deck to reveal a card</p>
+    </div>
+
+    <div class="section-line"></div>
+
+    <div class="game-layout">
+
+      <!-- Deck -->
+      <div class="deck-col">
+        <div id="deck-wrapper">
+          <div id="deck" onclick="drawCard()" title="Click to draw a card">
+            <img id="deck-img"
+                 src="{{ url_for('static', filename='images/back_dark.png') }}"
+                 alt="Card back" />
+            <div class="deck-lock-badge">🔒</div>
+          </div>
+          <span id="deck-label">Draw a card</span>
+          <span id="deck-counter">{{ remaining }} cards remaining</span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div id="game-divider" class="game-divider" style="display:none"></div>
+
+      <!-- Card + info -->
+      <div id="card-col">
+
+        <div id="empty-msg" class="d-none">
+          <span class="empty-icon">🃏</span>
+          All {{ total_cards }} cards drawn.<br>
+          <span style="font-size:.8rem">Use <strong>Menu → Reset Deck</strong> to start over.</span>
+        </div>
+
+        <div id="card-display">
+
+          <div id="card-left">
+            <div id="card-face" class="playing-card d-none"></div>
+            <div id="complete-wrap" class="d-none">
+              <button id="complete-btn" class="btn-complete" onclick="completeCard()">
+                <span id="complete-icon">○</span>
+                <span id="complete-text">Mark as Completed</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="card-info" class="d-none">
+            <div class="info-row">
+              <div class="info-label">Card</div>
+              <div class="info-value fw-bold" id="info-name">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Deck</div>
+              <div class="info-value" id="info-maze">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Task</div>
+              <div class="info-value" id="info-task">—</div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Points</div>
+              <div class="info-value">
+                <span class="points-badge">⭐ <span id="info-points">—</span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Bottom status bar (scores + seed) ── -->
+  <div id="bottom-bar">
+    <div id="bottom-scores">
+      {% for track_key, meta in track_meta.items() %}
+      <a id="score-badge-{{ track_key }}" class="suit-badge" data-suit="{{ track_key }}" href="/prize/{{ track_key }}">
+        {{ meta.symbol }} <span id="score-{{ track_key }}">{{ scores[track_key] }}</span>
+      </a>
+      {% endfor %}
+      <button id="share-btn" class="bottom-share-btn d-none" onclick="shareSession()" title="Share results">↗ share</button>
+    </div>
+    <div id="bottom-seed">🎲 Seed: <span id="seed-value">{{ seed }}</span> &nbsp;·&nbsp; 🃏 <span id="bottom-count">{{ remaining }}</span> / {{ total_cards }} left &nbsp;·&nbsp; <a href="/cookies-disclaimer" class="cookie-disclaimer-link">Cookies are used to store the run data</a></div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast-wrap">
+    <div id="app-toast" class="toast toast-app" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto" id="toast-title">{{ app_title }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toast-body"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script>
+    const TRACK_META = {{ track_meta | tojson }};
+    const TRACK_KEYS = {{ track_keys | tojson }};
+    const SUIT_SYMBOLS = Object.fromEntries(Object.entries(TRACK_META).map(([key, meta]) => [key, meta.symbol]));
+    const RED_SUITS    = new Set(['hearts', 'diamonds']);
+    const SCORE_THRESHOLD = {{ prize_threshold|tojson }};
+    const GOLD_THRESHOLD = 91;
+    const TOTAL_CARDS = {{ total_cards|tojson }};
+
+    function cardValueLabel(id) {
+      if (id.startsWith('joker_')) return '★';
+      const m = id.match(/^(\d+|[JQKA])/);
+      return m ? m[0] : '?';
+    }
+
+    // ── Counter ──────────────────────────────────────────────────
+    function updateCounter(remaining) {
+      const navCount   = document.getElementById('nav-count');
+      const bottomCount = document.getElementById('bottom-count');
+      const pill       = document.getElementById('nav-counter');
+      const counter    = document.getElementById('deck-counter');
+      if (navCount)    navCount.textContent    = remaining;
+      if (bottomCount) bottomCount.textContent = remaining;
+      if (counter)     counter.textContent     = remaining + ' cards remaining';
+      if (remaining === 0) {
+        if (pill)    pill.classList.add('empty');
+        if (counter) counter.classList.add('empty');
+      } else {
+        if (pill)    pill.classList.remove('empty');
+        if (counter) counter.classList.remove('empty');
+      }
+    }
+
+    // ── Toast ─────────────────────────────────────────────────────
+    function showToast(title, body, delay = 3000) {
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-body').textContent  = body;
+      new bootstrap.Toast(document.getElementById('app-toast'), { delay }).show();
+    }
+
+    // ── Render card face ──────────────────────────────────────────
+    function renderCard(card) {
+      const suit = card.maze.toLowerCase();
+      const sym  = SUIT_SYMBOLS[suit] || suit;
+      const val  = cardValueLabel(card.id);
+      const face = document.getElementById('card-face');
+      face.className = '';
+      void face.offsetWidth;
+      if (suit === 'joker') {
+        const jokerImg = {{ url_for('static', filename='images/joker.png') | tojson }};
+        face.className = 'playing-card joker-card';
+        face.innerHTML = `
+          <div class="card-tl"><span class="cv">${val}</span><span class="cs">${sym}</span></div>
+          <img class="joker-art" src="${jokerImg}" alt="Joker card">
+          <div class="card-br"><span class="cv">${val}</span><span class="cs">${sym}</span></div>`;
+        return;
+      }
+      const col  = RED_SUITS.has(suit) ? 'red-card' : 'black-card';
+      face.className = `playing-card ${col}`;
+      face.innerHTML = `
+        <div class="card-tl"><span class="cv">${val}</span><span class="cs">${sym}</span></div>
+        <div class="card-mid">${sym}</div>
+        <div class="card-br"><span class="cv">${val}</span><span class="cs">${sym}</span></div>`;
+    }
+
+    // ── Render info panel ─────────────────────────────────────────
+    function renderInfo(card) {
+      const suit = card.maze.toLowerCase();
+      const sym  = SUIT_SYMBOLS[suit] || suit;
+      const name = card.maze.charAt(0).toUpperCase() + card.maze.slice(1);
+      document.getElementById('info-name').textContent   = card.name;
+      document.getElementById('info-maze').innerHTML     = `${sym}&nbsp; ${name}`;
+      document.getElementById('info-task').textContent   = card.task;
+      document.getElementById('info-points').textContent = card.points;
+      const panel = document.getElementById('card-info');
+      panel.className = 'd-none';
+      void panel.offsetWidth;
+      panel.className = '';
+    }
+
+    function setJokerBackdrop(isJoker) {
+      document.body.classList.toggle('joker-active', Boolean(isJoker));
+    }
+
+    // ── Suit scores ───────────────────────────────────────────────
+    function _applyBadgeState(el, val) {
+      if (!el) return;
+      if (val >= SCORE_THRESHOLD) el.classList.add('unlocked');
+      else                        el.classList.remove('unlocked');
+      el.classList.toggle('gilded', val >= GOLD_THRESHOLD);
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
+
+    function updateScores(scores) {
+      TRACK_KEYS.forEach(suit => {
+        const val = scores[suit] || 0;
+
+        /* ── Bottom bar: update number and color ── */
+        const span        = document.getElementById('score-' + suit);
+        const bottomBadge = document.getElementById('score-badge-' + suit);
+        if (span) {
+          const wasUnlocked = bottomBadge && bottomBadge.classList.contains('unlocked');
+          span.textContent = val;
+          if (val >= SCORE_THRESHOLD && !wasUnlocked) {
+            showToast('🎉 Prize Unlocked!',
+              `${SUIT_SYMBOLS[suit]} ${TRACK_META[suit].label} prize available! Click the symbol to claim it.`,
+              5000);
+          }
+          _applyBadgeState(bottomBadge, val);
+        }
+
+        /* ── Mobile navbar badges: color/glow only ── */
+        _applyBadgeState(document.getElementById('m-badge-' + suit), val);
+      });
+    }
+
+    // Init badges from server-rendered scores
+    (function initScores() {
+      const init = {
+        hearts:   parseInt(document.getElementById('score-hearts').textContent)   || 0,
+        diamonds: parseInt(document.getElementById('score-diamonds').textContent) || 0,
+        clubs:    parseInt(document.getElementById('score-clubs').textContent)    || 0,
+        spades:   parseInt(document.getElementById('score-spades').textContent)   || 0,
+        joker:    parseInt(document.getElementById('score-joker').textContent)    || 0,
+      };
+      TRACK_KEYS.forEach(s => {
+        const val = init[s];
+        if (val >= SCORE_THRESHOLD) {
+          ['m-badge-', 'score-badge-'].forEach(prefix => {
+            const el = document.getElementById(prefix + s);
+            if (el) el.classList.add('unlocked');
+          });
+        }
+        ['m-badge-', 'score-badge-'].forEach(prefix => {
+          const el = document.getElementById(prefix + s);
+          if (el) el.classList.toggle('gilded', val >= GOLD_THRESHOLD);
+        });
+      });
+      // Show share button if any card has been completed (any score > 0)
+      if (Object.values(init).some(v => v > 0)) showShareBtn();
+    })();
+
+    // ── Game state ────────────────────────────────────────────────
+    let cardPending    = false;
+    let deckExhausted  = false;
+    let currentPts     = 0;
+    let currentSuit    = '';
+    let currentCardId  = '';
+    let currentCardName= '';
+    let currentCardTask= '';
+    let completedCards = {{ completed_cards | tojson }};
+    const CURRENT_USER = {{ app_username|tojson }};
+
+    // ── Restore pending card from session (survives page navigation) ──
+    (function restorePendingCard() {
+      const saved = {{ (current_card or {}) | tojson }};
+      if (!saved || !saved.id) return;
+      // Populate state
+      currentPts      = parseInt(saved.points) || 0;
+      currentSuit     = (saved.maze || '').toLowerCase();
+      currentCardId   = saved.id   || '';
+      currentCardName = saved.name || '';
+      currentCardTask = saved.task || '';
+      cardPending     = true;
+      // Render the card and info panel
+      showCardCol();
+      document.getElementById('empty-msg').classList.add('d-none');
+      document.getElementById('card-face').classList.remove('d-none');
+      renderCard(saved);
+      renderInfo(saved);
+      setJokerBackdrop(currentSuit === 'joker');
+      lockDeck();
+      showCompleteBtn(true);
+      if ({{ remaining }} === 0) deckExhausted = true;
+    })();
+
+    // ── Complete button ───────────────────────────────────────────
+    function showShareBtn() {
+      document.getElementById('share-btn').classList.remove('d-none');
+    }
+    function showCompleteBtn(reset = true) {
+      const wrap = document.getElementById('complete-wrap');
+      const btn  = document.getElementById('complete-btn');
+      wrap.classList.remove('d-none');
+      if (reset) {
+        btn.classList.remove('is-done', 'pulse', 'shake');
+        btn.disabled = false;
+        document.getElementById('complete-icon').textContent = '○';
+        document.getElementById('complete-text').textContent = 'Mark as Completed';
+        void btn.offsetWidth;
+        btn.classList.add('pulse');
+      }
+    }
+    function hideCompleteBtn() {
+      document.getElementById('complete-wrap').classList.add('d-none');
+    }
+
+    // ── Lock / unlock deck ────────────────────────────────────────
+    function lockDeck() {
+      document.getElementById('deck').classList.add('deck-locked');
+      document.getElementById('deck-label').textContent = 'Complete task first';
+    }
+    function unlockDeck() {
+      document.getElementById('deck').classList.remove('deck-locked');
+      document.getElementById('deck-label').textContent = 'Draw a card';
+    }
+
+    // ── Empty deck ────────────────────────────────────────────────
+    function showEmptyDeck() {
+      const deck = document.getElementById('deck');
+      deck.classList.add('deck-empty');
+      deck.classList.remove('deck-locked');
+      document.getElementById('deck-label').textContent = 'Deck empty';
+      document.getElementById('card-face').classList.add('d-none');
+      document.getElementById('card-info').classList.add('d-none');
+      hideCompleteBtn();
+      showCardCol();
+      document.getElementById('empty-msg').classList.remove('d-none');
+      showToast('Deck empty', `All ${TOTAL_CARDS} cards drawn. Reset to play again.`, 4500);
+      cardPending = false;
+      setJokerBackdrop(false);
+    }
+
+    // ── Show / hide card column ───────────────────────────────────
+    function showCardCol() {
+      document.getElementById('card-col').classList.add('visible');
+      document.getElementById('game-divider').style.display = 'block';
+    }
+    function hideCardCol() {
+      document.getElementById('card-col').classList.remove('visible');
+      document.getElementById('game-divider').style.display = 'none';
+    }
+
+    // ── Draw ──────────────────────────────────────────────────────
+    async function drawCard() {
+      const deck = document.getElementById('deck');
+      if (deck.classList.contains('deck-empty')) return;
+      if (cardPending) {
+        const btn = document.getElementById('complete-btn');
+        btn.classList.remove('shake');
+        void btn.offsetWidth;
+        btn.classList.add('shake');
+        showToast('Task pending', 'Mark the current card as Completed before drawing the next one.', 2500);
+        return;
+      }
+      deck.style.pointerEvents = 'none';
+      try {
+        const resp = await fetch('/draw');
+        if (!resp.ok) throw new Error('Server error');
+        const data = await resp.json();
+        if (data.empty) { showEmptyDeck(); updateCounter(0); return; }
+        showCardCol();
+        document.getElementById('empty-msg').classList.add('d-none');
+        document.getElementById('card-face').classList.remove('d-none');
+        renderCard(data);
+        renderInfo(data);
+        updateCounter(data.remaining);
+        currentPts      = parseInt(data.points) || 0;
+        currentSuit     = (data.maze || '').toLowerCase();
+        currentCardId   = data.id   || '';
+        currentCardName = data.name || '';
+        currentCardTask = data.task || '';
+        setJokerBackdrop(currentSuit === 'joker');
+        cardPending = true;
+        lockDeck();
+        showCompleteBtn(true);
+        if (data.remaining === 0) deckExhausted = true;
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Could not draw a card. Try again.');
+      } finally {
+        if (!deck.classList.contains('deck-empty') && !deck.classList.contains('deck-locked')) {
+          deck.style.pointerEvents = '';
+        } else if (deck.classList.contains('deck-locked')) {
+          deck.style.pointerEvents = '';
+        }
+      }
+    }
+
+    // ── Complete card ─────────────────────────────────────────────
+    async function completeCard() {
+      if (!cardPending) return;
+      const btn = document.getElementById('complete-btn');
+      btn.disabled = true;
+      try {
+        const resp = await fetch('/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ points: currentPts, suit: currentSuit }),
+        });
+        if (!resp.ok) throw new Error('Complete failed');
+        const data = await resp.json();
+        btn.classList.remove('pulse', 'shake');
+        btn.classList.add('is-done');
+        document.getElementById('complete-icon').textContent = '✓';
+        document.getElementById('complete-text').textContent = 'Completed!';
+        // Record the completed card for the Save feature
+        completedCards.push({
+          id:     currentCardId,
+          name:   currentCardName,
+          suit:   currentSuit,
+          points: currentPts,
+          task:   currentCardTask,
+        });
+
+        updateScores(data.scores);
+        showShareBtn();
+        cardPending = false;
+        if (deckExhausted) {
+          showEmptyDeck();
+        } else {
+          unlockDeck();
+        }
+      } catch (err) {
+        console.error(err);
+        btn.disabled = false;
+        showToast('Error', 'Could not register completion.');
+      }
+    }
+
+    // ── Save session ──────────────────────────────────────────────
+    async function saveSession(e) {
+      e.preventDefault();
+      document.querySelector('.dropdown-menu.show')?.classList.remove('show');
+
+      if (completedCards.length === 0) {
+        showToast('Nothing to save', 'Complete at least one card before saving.', 3000);
+        return;
+      }
+
+      // Collect current scores from the DOM (they reflect the live session)
+      const scores = {
+        hearts:   parseInt(document.getElementById('score-hearts').textContent)   || 0,
+        diamonds: parseInt(document.getElementById('score-diamonds').textContent) || 0,
+        clubs:    parseInt(document.getElementById('score-clubs').textContent)    || 0,
+        spades:   parseInt(document.getElementById('score-spades').textContent)   || 0,
+        joker:    parseInt(document.getElementById('score-joker').textContent)    || 0,
+      };
+
+      try {
+        const resp = await fetch('/save', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            username:        CURRENT_USER,
+            scores:          scores,
+            completed_cards: completedCards,
+          }),
+        });
+        if (!resp.ok) throw new Error('Save failed');
+        const data = await resp.json();
+
+        showToast(
+          '💾 Session saved!',
+          `Saved ${completedCards.length} completed card${completedCards.length !== 1 ? 's' : ''} (record #${data.id}) at ${data.date}.`,
+          5000
+        );
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Could not save the session. Please try again.');
+      }
+    }
+
+    // ── Reset ─────────────────────────────────────────────────────
+    async function resetDeck(e) {
+      e.preventDefault();
+      document.querySelector('.dropdown-menu.show')?.classList.remove('show');
+      try {
+        const resp = await fetch('/reset', { method: 'POST' });
+        if (!resp.ok) throw new Error('Reset failed');
+        const data = await resp.json();
+        const deck = document.getElementById('deck');
+        deck.classList.remove('deck-empty', 'deck-locked');
+        deck.style.pointerEvents = '';
+        cardPending     = false;
+        deckExhausted   = false;
+        currentPts      = 0;
+        currentSuit     = '';
+        currentCardId   = '';
+        currentCardName = '';
+        currentCardTask = '';
+        completedCards  = [];
+        setJokerBackdrop(false);
+        unlockDeck();
+        hideCardCol();
+        hideCompleteBtn();
+        document.getElementById('card-face').classList.add('d-none');
+        document.getElementById('card-info').classList.add('d-none');
+        document.getElementById('empty-msg').classList.add('d-none');
+        updateCounter(data.remaining);
+        updateScores(data.scores);
+        if (data.seed) document.getElementById('seed-value').textContent = data.seed;
+        showToast('Deck reset', `Fresh deck of ${data.remaining} cards. All scores reset to 0.`);
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Could not reset the deck.');
+      }
+    }
+
+    // ── Seed Run ───────────────────────────────────────────────────
+    async function seedRun(e) {
+      e.preventDefault();
+      document.querySelector('.dropdown-menu.show')?.classList.remove('show');
+      const seed = prompt('Enter a seed (letters and numbers):\nThe same seed always produces the same card order.');
+      if (seed === null || seed.trim() === '') return;
+      try {
+        const resp = await fetch('/seed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ seed: seed.trim() }),
+        });
+        if (!resp.ok) throw new Error('Seed run failed');
+        const data = await resp.json();
+        const deck = document.getElementById('deck');
+        deck.classList.remove('deck-empty', 'deck-locked');
+        deck.style.pointerEvents = '';
+        cardPending     = false;
+        deckExhausted   = false;
+        currentPts      = 0;
+        currentSuit     = '';
+        currentCardId   = '';
+        currentCardName = '';
+        currentCardTask = '';
+        completedCards  = [];
+        setJokerBackdrop(false);
+        unlockDeck();
+        hideCardCol();
+        hideCompleteBtn();
+        document.getElementById('card-face').classList.add('d-none');
+        document.getElementById('card-info').classList.add('d-none');
+        document.getElementById('empty-msg').classList.add('d-none');
+        updateCounter(data.remaining);
+        updateScores(data.scores);
+        document.getElementById('seed-value').textContent = data.seed;
+        showToast('🎲 Seed run started', `Deck shuffled with seed "${data.seed}".`);
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Could not start seed run.');
+      }
+    }
+
+    // ── Share ──────────────────────────────────────────────────────
+    async function shareSession() {
+      const scores = {
+        hearts:   parseInt(document.getElementById('score-hearts').textContent)   || 0,
+        diamonds: parseInt(document.getElementById('score-diamonds').textContent) || 0,
+        clubs:    parseInt(document.getElementById('score-clubs').textContent)    || 0,
+        spades:   parseInt(document.getElementById('score-spades').textContent)   || 0,
+        joker:    parseInt(document.getElementById('score-joker').textContent)    || 0,
+      };
+      const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+      if (totalScore === 0 && completedCards.length === 0) {
+        showToast('Nothing to share', 'Complete at least one card first.', 3000);
+        return;
+      }
+      try {
+        const resp = await fetch('/save', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ scores, completed_cards: completedCards }),
+        });
+        if (!resp.ok) throw new Error('Save failed');
+        const data = await resp.json();
+        window.location.href = '/share/' + data.id;
+      } catch (err) {
+        console.error(err);
+        showToast('Error', 'Could not generate share page.');
+      }
+    }
+  </script>
+</body>
+</html>
